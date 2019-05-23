@@ -5,8 +5,6 @@
 !scripts/common/*
 scripts/.snakemake*
 !Snakefile
-!config.yaml
-!samples.tsv
 !resources
 !resources/*
 !envs
@@ -21,8 +19,6 @@ scripts/.snakemake*
 !.editorconfig
 !.travis.yml
 !.test
-!samples.tsv
-!units.tsv
 !schemas
 !schemas/*
 !.test/data

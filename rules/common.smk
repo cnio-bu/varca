@@ -1,21 +1,26 @@
 import pandas as pd
 from snakemake.utils import validate
 
+singularity: "docker://continuumio/miniconda3:4.6.14"
+
 report: "../report/workflow.rst"
 
 ###### Config file and sample sheets #####
 configfile: "config.yaml"
 validate(config, schema="../schemas/config.schema.yaml")
 
-samples = pd.read_table(config["samples"]).set_index("sample", drop=False)
+OUTDIR = config["outdir"]
+LOGDIR = config["logdir"]
+
+samples = pd.read_csv(config["samples"],sep="\t").set_index("sample", drop=False)
 validate(samples, schema="../schemas/samples.schema.yaml")
 
-units = pd.read_table(config["units"], dtype=str).set_index(["sample", "unit"], drop=False)
+units = pd.read_csv(config["units"],sep="\t", dtype=str).set_index(["sample", "unit"], drop=False)
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="../schemas/units.schema.yaml")
 
 # contigs in reference genome
-contigs = pd.read_table(config["ref"]["genome"] + ".fai",
+contigs = pd.read_csv(config["ref"]["genome"] + ".fai", sep="\t",
                         header=None, usecols=[0], squeeze=True, dtype=str)
 
 
@@ -28,6 +33,12 @@ wildcard_constraints:
 
 
 ##### Helper functions #####
+
+def get_resource(rule,resource):
+    try:
+        return config["resources"][rule][resource]
+    except KeyError:
+        return config["resources"]["default"][resource]
 
 def get_fastq(wildcards):
     """Get fastq files of given sample-unit."""
@@ -53,15 +64,15 @@ def get_trimmed_reads(wildcards):
     """Get trimmed reads of given sample-unit."""
     if not is_single_end(**wildcards):
         # paired-end sample
-        return expand("trimmed/{sample}-{unit}.{group}.fastq.gz",
-                      group=[1, 2], **wildcards)
+        return expand("{OUTDIR}/trimmed/{sample}-{unit}.{group}.fastq.gz",
+                      OUTDIR=OUTDIR, group=[1, 2], **wildcards)
     # single end sample
-    return "trimmed/{sample}-{unit}.fastq.gz".format(**wildcards)
+    return f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.fastq.gz".format(**wildcards)
 
 
 def get_sample_bams(wildcards):
     """Get all aligned reads of given sample."""
-    return expand("recal/{sample}-{unit}.bam",
+    return expand(f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
                   sample=wildcards.sample,
                   unit=units.loc[wildcards.sample].unit)
 
@@ -83,10 +94,10 @@ def get_call_variants_params(wildcards, input):
 
 def get_recal_input(bai=False):
     # case 1: no duplicate removal
-    f = "mapped/{sample}-{unit}.sorted.bam"
+    f = f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam"
     if config["processing"]["remove-duplicates"]:
         # case 2: remove duplicates
-        f = "dedup/{sample}-{unit}.bam"
+        f = f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam"
     if bai:
         if config["processing"].get("restrict-regions"):
             # case 3: need an index because random access is required

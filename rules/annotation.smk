@@ -1,13 +1,16 @@
 rule snpeff:
     input:
-        "filtered/all.vcf.gz",
+        f"{OUTDIR}/filtered/all.vcf.gz",
     output:
-        vcf=report("annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
-        csvstats="snpeff/all.csv"
+        vcf=report(f"{OUTDIR}/annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
+        csvstats=f"{OUTDIR}/snpeff/all.csv"
     log:
         "logs/snpeff.log"
+    threads: get_resource("snpeff","threads")
+    resources:
+        mem = get_resource("snpeff","mem")
     params:
         reference=config["ref"]["name"],
-        extra="-Xmx6g"
+        extra="-Xmx{}m".format(get_resource("snpeff","mem"))
     wrapper:
         "0.27.1/bio/snpeff"

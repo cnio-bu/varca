@@ -2,33 +2,42 @@ rule fastqc:
     input:
         unpack(get_fastq)
     output:
-        html="qc/fastqc/{sample}-{unit}.html",
-        zip="qc/fastqc/{sample}-{unit}.zip"
+        html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}.html",
+        zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}.zip"
+    threads: get_resource("fastqc","threads")
+    resources:
+        mem = get_resource("fastqc","mem")
     wrapper:
         "0.27.1/bio/fastqc"
 
 
 rule samtools_stats:
     input:
-        "recal/{sample}-{unit}.bam"
+        f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam"
     output:
-        "qc/samtools-stats/{sample}-{unit}.txt"
+        f"{OUTDIR}/qc/samtools-stats/{{sample}}-{{unit}}.txt"
     log:
-        "logs/samtools-stats/{sample}-{unit}.log"
+        f"{LOGDIR}/samtools-stats/{{sample}}-{{unit}}.log"
+    threads: get_resource("samtools_stats","threads")
+    resources:
+        mem = get_resource("samtools_stats","mem")
     wrapper:
         "0.27.1/bio/samtools/stats"
 
 
 rule multiqc:
     input:
-        expand(["qc/samtools-stats/{u.sample}-{u.unit}.txt",
-                "qc/fastqc/{u.sample}-{u.unit}.zip",
-                "qc/dedup/{u.sample}-{u.unit}.metrics.txt"],
+        expand([f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt",
+                f"{OUTDIR}/qc/fastqc/{{u.sample}}-{{u.unit}}.zip",
+                f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt"],
                u=units.itertuples()),
-        "snpeff/all.csv"
+        f"{OUTDIR}/snpeff/all.csv"
     output:
-        report("qc/multiqc.html", caption="../report/multiqc.rst", category="Quality control")
+        report(f"{OUTDIR}/qc/multiqc.html", caption="../report/multiqc.rst", category="Quality control")
     log:
-        "logs/multiqc.log"
+        f"{LOGDIR}/multiqc.log"
+    threads: get_resource("multiqc","threads")
+    resources:
+        mem = get_resource("multiqc","mem")
     wrapper:
         "0.27.1/bio/multiqc"

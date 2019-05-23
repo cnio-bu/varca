@@ -2,12 +2,15 @@ rule trim_reads_se:
     input:
         unpack(get_fastq)
     output:
-        temp("trimmed/{sample}-{unit}.fastq.gz")
+        temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.fastq.gz")
     params:
         extra="",
         **config["params"]["trimmomatic"]["se"]
     log:
-        "logs/trimmomatic/{sample}-{unit}.log"
+        f"{LOGDIR}/trimmomatic/{{sample}}-{{unit}}.log"
+    threads: get_resource("trim_reads","threads")
+    resources:
+        mem = get_resource("trim_reads","mem")
     wrapper:
         "0.30.0/bio/trimmomatic/se"
 
@@ -16,16 +19,19 @@ rule trim_reads_pe:
     input:
         unpack(get_fastq)
     output:
-        r1=temp("trimmed/{sample}-{unit}.1.fastq.gz"),
-        r2=temp("trimmed/{sample}-{unit}.2.fastq.gz"),
-        r1_unpaired=temp("trimmed/{sample}-{unit}.1.unpaired.fastq.gz"),
-        r2_unpaired=temp("trimmed/{sample}-{unit}.2.unpaired.fastq.gz"),
-        trimlog="trimmed/{sample}-{unit}.trimlog.txt"
+        r1=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.1.fastq.gz"),
+        r2=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.2.fastq.gz"),
+        r1_unpaired=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.1.unpaired.fastq.gz"),
+        r2_unpaired=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.2.unpaired.fastq.gz"),
+        trimlog=f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.trimlog.txt"
     params:
         extra=lambda w, output: "-trimlog {}".format(output.trimlog),
         **config["params"]["trimmomatic"]["pe"]
     log:
-        "logs/trimmomatic/{sample}-{unit}.log"
+        f"{LOGDIR}/trimmomatic/{{sample}}-{{unit}}.log"
+    threads: get_resource("trim_reads","threads")
+    resources:
+        mem = get_resource("trim_reads","mem")
     wrapper:
         "0.30.0/bio/trimmomatic/pe"
 
@@ -34,27 +40,32 @@ rule map_reads:
     input:
         reads=get_trimmed_reads
     output:
-        temp("mapped/{sample}-{unit}.sorted.bam")
+        temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
-        "logs/bwa_mem/{sample}-{unit}.log"
+        f"{LOGDIR}/bwa_mem/{{sample}}-{{unit}}.log"
     params:
         index=config["ref"]["genome"],
         extra=get_read_group,
         sort="samtools",
         sort_order="coordinate"
-    threads: 8
+    threads: get_resource("map_reads","threads")
+    resources:
+        mem = get_resource("map_reads","mem")
     wrapper:
         "0.27.1/bio/bwa/mem"
 
 
 rule mark_duplicates:
     input:
-        "mapped/{sample}-{unit}.sorted.bam"
+        f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam"
     output:
-        bam=temp("dedup/{sample}-{unit}.bam"),
-        metrics="qc/dedup/{sample}-{unit}.metrics.txt"
+        bam=temp(f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam"),
+        metrics=f"{OUTDIR}/qc/dedup/{{sample}}-{{unit}}.metrics.txt"
     log:
-        "logs/picard/dedup/{sample}-{unit}.log"
+        f"{LOGDIR}/picard/dedup/{{sample}}-{{unit}}.log"
+    threads: get_resource("mark_duplicates","threads")
+    resources:
+        mem = get_resource("mark_duplicates","mem")
     params:
         config["params"]["picard"]["MarkDuplicates"]
     wrapper:
@@ -68,19 +79,26 @@ rule recalibrate_base_qualities:
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"]
     output:
-        bam=protected("recal/{sample}-{unit}.bam")
+        bam=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam"
     params:
         extra=get_regions_param() + config["params"]["gatk"]["BaseRecalibrator"]
     log:
-        "logs/gatk/bqsr/{sample}-{unit}.log"
+        f"{LOGDIR}/gatk/bqsr/{{sample}}-{{unit}}.log"
+    threads: get_resource("recalibrate_base_qualities","threads")
+    resources:
+        mem = get_resource("recalibrate_base_qualities","mem")
     wrapper:
         "0.27.1/bio/gatk/baserecalibrator"
 
-
 rule samtools_index:
     input:
-        "{prefix}.bam"
+        f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam"
     output:
-        "{prefix}.bam.bai"
+        f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam.bai"
+    threads: get_resource("samtools_index","threads")
+    resources:
+        mem = get_resource("samtools_index","mem")
+    log:
+        f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
         "0.27.1/bio/samtools/index"

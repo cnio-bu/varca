@@ -1,10 +1,13 @@
 rule vcf_to_tsv:
     input:
-        "annotated/all.vcf.gz"
+        f"{OUTDIR}/annotated/all.vcf.gz"
     output:
-        report("tables/calls.tsv.gz", caption="../report/calls.rst", category="Calls")
+        report(f"{OUTDIR}/tables/calls.tsv.gz", caption="../report/calls.rst", category="Calls")
     conda:
         "../envs/rbt.yaml"
+    threads: get_resource("vcf_to_tsv","threads")
+    resources:
+        mem = get_resource("vcf_to_tsv","mem")
     shell:
         "bcftools view --apply-filters PASS --output-type u {input} | "
         "rbt vcf-to-txt -g --fmt DP AD --info ANN | "
@@ -13,11 +16,14 @@ rule vcf_to_tsv:
 
 rule plot_stats:
     input:
-        "tables/calls.tsv.gz"
+        f"{OUTDIR}/tables/calls.tsv.gz"
     output:
-        depths=report("plots/depths.svg", caption="../report/depths.rst", category="Plots"),
-        freqs=report("plots/allele-freqs.svg", caption="../report/freqs.rst", category="Plots")
+        depths=report(f"{OUTDIR}/plots/depths.svg", caption="../report/depths.rst", category="Plots"),
+        freqs=report(f"{OUTDIR}/plots/allele-freqs.svg", caption="../report/freqs.rst", category="Plots")
     conda:
         "../envs/stats.yaml"
+    threads: get_resource("plot_stats","threads")
+    resources:
+        mem = get_resource("plots_stats","mem")
     script:
         "../scripts/plot-depths.py"
