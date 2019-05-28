@@ -27,11 +27,10 @@ rule samtools_stats:
 
 rule multiqc:
     input:
-        expand([f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt",
-                f"{OUTDIR}/qc/fastqc/{{u.sample}}-{{u.unit}}.zip",
-                f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt"],
-               u=units.itertuples()),
-        f"{OUTDIR}/snpeff/all.csv"
+         expand(f"{OUTDIR}/qc/fastqc/{{u.sample}}-{{u.unit}}.zip", u=units.itertuples()),
+         expand(f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()),
+         expand(f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt", u=units.itertuples()),
+         f"{OUTDIR}/snpeff/all.csv"
     output:
         report(f"{OUTDIR}/qc/multiqc.html", caption="../report/multiqc.rst", category="Quality control")
     log:
