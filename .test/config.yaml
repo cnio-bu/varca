@@ -1,6 +1,9 @@
 samples: samples.tsv
 units: units.tsv
 
+outdir: "out"
+logdir: "log"
+
 ref:
   name: GRCh38.86
   genome: data/ref/genome.chr21.fa
