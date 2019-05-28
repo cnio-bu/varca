@@ -27,3 +27,6 @@ scripts/.snakemake*
 !.test/config.yaml
 !report
 !report/*.rst
+!samples-example.tsv
+!units-example.tsv
+!config-example.yaml
