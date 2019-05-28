@@ -55,3 +55,28 @@ params:
         - "TRAILING:3"
         - "SLIDINGWINDOW:4:15"
         - "MINLEN:36"
+
+resources:
+    default:
+        threads: 1
+        mem: 2000
+    snpeff:
+        mem: 8000
+    call_variants:
+        mem: 10000
+        threads: 4
+    combine_calls:
+        mem: 8000
+        threads: 1
+    hard_filter_calls:
+        mem: 8000
+    trim_reads:
+        mem: 4000
+        threads: 16
+    map_reads:
+        mem: 8000
+        threads: 8
+    recalibrate_base_qualities:
+        mem: 4000
+    mark_duplicates:
+        mem: 32000

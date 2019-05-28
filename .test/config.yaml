@@ -47,3 +47,8 @@ params:
         - "TRAILING:3"
         - "SLIDINGWINDOW:4:15"
         - "MINLEN:36"
+
+resources:
+    default:
+        threads: 1
+        mem: 2000
