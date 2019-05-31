@@ -8,7 +8,7 @@ rule fastqc:
     resources:
         mem = get_resource("fastqc","mem")
     wrapper:
-        "0.27.1/bio/fastqc"
+        "https://bitbucket.org/tdido/snakemake-wrappers/raw/195d5bbcbbdab720554bc4046c5015e1c6e04114/bio/fastqc"
 
 
 rule samtools_stats:

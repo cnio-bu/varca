@@ -52,3 +52,5 @@ resources:
     default:
         threads: 1
         mem: 2000
+    snpeff:
+        mem: 8000
