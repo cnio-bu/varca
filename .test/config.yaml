@@ -23,7 +23,7 @@ filtering:
 
 processing:
   remove-duplicates: true
-  # restrict-regions: ../raw/captured_regions.bed
+  restrict-regions: data/ref/captured_regions.bed
   # region-padding: 100
 
 params:

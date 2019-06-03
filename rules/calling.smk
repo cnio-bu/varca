@@ -35,7 +35,7 @@ rule call_variants:
     params:
         extra=get_call_variants_params
     wrapper:
-        "0.27.1/bio/gatk/haplotypecaller"
+        "0.35.0/bio/gatk/haplotypecaller"
 
 
 rule combine_calls:
@@ -50,7 +50,7 @@ rule combine_calls:
     resources:
         mem = get_resource("combine_calls","mem")
     wrapper:
-        "0.27.1/bio/gatk/combinegvcfs"
+        "0.35.0/bio/gatk/combinegvcfs"
 
 
 rule genotype_variants:
@@ -67,7 +67,7 @@ rule genotype_variants:
     resources:
         mem = get_resource("genotype_variants","mem")
     wrapper:
-        "0.27.1/bio/gatk/genotypegvcfs"
+        "0.35.0/bio/gatk/genotypegvcfs"
 
 
 rule merge_variants:
@@ -81,4 +81,4 @@ rule merge_variants:
     resources:
         mem = get_resource("merge_variants","mem")
     wrapper:
-        "0.27.1/bio/picard/mergevcfs"
+        "0.35.0/bio/picard/mergevcfs"

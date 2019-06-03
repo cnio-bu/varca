@@ -12,7 +12,7 @@ rule trim_reads_se:
     resources:
         mem = get_resource("trim_reads","mem")
     wrapper:
-        "0.30.0/bio/trimmomatic/se"
+        "0.35.0/bio/trimmomatic/se"
 
 
 rule trim_reads_pe:
@@ -33,7 +33,7 @@ rule trim_reads_pe:
     resources:
         mem = get_resource("trim_reads","mem")
     wrapper:
-        "0.30.0/bio/trimmomatic/pe"
+        "0.35.0/bio/trimmomatic/pe"
 
 
 rule map_reads:
@@ -52,7 +52,7 @@ rule map_reads:
     resources:
         mem = get_resource("map_reads","mem")
     wrapper:
-        "0.27.1/bio/bwa/mem"
+        "0.35.0/bio/bwa/mem"
 
 
 rule mark_duplicates:
@@ -69,7 +69,7 @@ rule mark_duplicates:
     params:
         config["params"]["picard"]["MarkDuplicates"]
     wrapper:
-        "0.26.1/bio/picard/markduplicates"
+        "0.35.0/bio/picard/markduplicates"
 
 
 rule recalibrate_base_qualities:
@@ -88,7 +88,7 @@ rule recalibrate_base_qualities:
     resources:
         mem = get_resource("recalibrate_base_qualities","mem")
     wrapper:
-        "0.27.1/bio/gatk/baserecalibrator"
+        "0.35.0/bio/gatk/baserecalibrator"
 
 rule samtools_index:
     input:
@@ -101,4 +101,4 @@ rule samtools_index:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.27.1/bio/samtools/index"
+        "0.35.0/bio/samtools/index"

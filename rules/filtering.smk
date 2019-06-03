@@ -17,7 +17,7 @@ rule select_calls:
     resources:
         mem = get_resource("select_calls","mem")
     wrapper:
-        "0.27.1/bio/gatk/selectvariants"
+        "0.35.0/bio/gatk/selectvariants"
 
 
 def get_filter(wildcards):
@@ -40,7 +40,7 @@ rule hard_filter_calls:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{vartype}}.log"
     wrapper:
-        "0.27.1/bio/gatk/variantfiltration"
+        "0.35.0/bio/gatk/variantfiltration"
 
 
 rule recalibrate_calls:
@@ -56,7 +56,7 @@ rule recalibrate_calls:
     resources:
         mem = get_resource("recalibrate_calls","mem")
     wrapper:
-        "0.27.1/bio/gatk/variantrecalibrator"
+        "0.35.0/bio/gatk/variantrecalibrator"
 
 
 rule merge_calls:
@@ -74,4 +74,4 @@ rule merge_calls:
     resources:
         mem = get_resource("merge_calls","mem")
     wrapper:
-        "0.27.1/bio/picard/mergevcfs"
+        "0.35.0/bio/picard/mergevcfs"

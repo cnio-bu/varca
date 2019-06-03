@@ -13,4 +13,4 @@ rule snpeff:
         reference=config["ref"]["name"],
         extra="-Xmx{}m".format(get_resource("snpeff","mem"))
     wrapper:
-        "0.27.1/bio/snpeff"
+        "0.35.0/bio/snpeff"
