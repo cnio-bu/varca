@@ -57,7 +57,7 @@ def get_merged_bam(wc):
     if len(bams) > 1:
         return f"{OUTDIR}/merged_bams/{wc.sample}.bam",f"{OUTDIR}/merged_bams/{wc.sample}.bam.bai"
     else:
-        return bams[0]
+        return bams[0],bams[0] + ".bai"
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
     if regions:
