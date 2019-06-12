@@ -95,14 +95,14 @@ rule merge_bams:
 
 rule samtools_index_recal:
     input:
-        f"{OUTDIR}/recal/{{sample}}.bam"
+        f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam"
     output:
-        f"{OUTDIR}/recal/{{sample}}.bam.bai"
+        f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam.bai"
     threads: get_resource("samtools_index","threads")
     resources:
         mem = get_resource("samtools_index","mem")
     log:
-        f"{LOGDIR}/samtools/index_recal/{{sample}}.log"
+        f"{LOGDIR}/samtools/index_recal/{{sample}}-{{unit}}.log"
     wrapper:
         "0.35.0/bio/samtools/index"
 
