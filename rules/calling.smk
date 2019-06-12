@@ -93,14 +93,27 @@ rule merge_bams:
     wrapper:
         "0.35.0/bio/samtools/merge"
 
+rule samtools_index_recal:
+    input:
+        f"{OUTDIR}/recal/{{sample}}.bam"
+    output:
+        f"{OUTDIR}/recal/{{sample}}.bam.bai"
+    threads: get_resource("samtools_index","threads")
+    resources:
+        mem = get_resource("samtools_index","mem")
+    log:
+        f"{LOGDIR}/samtools/index_recal/{{sample}}.log"
+    wrapper:
+        "0.35.0/bio/samtools/index"
+
 rule samtools_index_merged:
     input:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     output:
         f"{OUTDIR}/merged_bams/{{sample}}.bam.bai"
-    threads: get_resource("samtools_index_merged","threads")
+    threads: get_resource("samtools_index","threads")
     resources:
-        mem = get_resource("samtools_index_merged","mem")
+        mem = get_resource("samtools_index","mem")
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     wrapper:
