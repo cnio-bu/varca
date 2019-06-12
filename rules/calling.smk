@@ -82,3 +82,43 @@ rule merge_variants:
         mem = get_resource("merge_variants","mem")
     wrapper:
         "0.35.0/bio/picard/mergevcfs"
+
+rule merge_bams:
+    input: get_sample_bams
+    output:
+        f"{OUTDIR}/merged_bams/{{sample}}.bam"
+    threads: get_resource("merge_bams","threads")
+    resources:
+        mem = get_resource("merge_bams","mem")
+    wrapper:
+        "0.35.0/bio/samtools/merge"
+
+rule samtools_index_merged:
+    input:
+        f"{OUTDIR}/merged_bams/{{sample}}.bam"
+    output:
+        f"{OUTDIR}/merged_bams/{{sample}}.bam.bai"
+    threads: get_resource("samtools_index_merged","threads")
+    resources:
+        mem = get_resource("samtools_index_merged","mem")
+    log:
+        f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
+    wrapper:
+        "0.35.0/bio/samtools/index"
+
+rule mutect:
+    input:
+        bam=lambda wc: get_merged_bam(wc)[0],
+        bai=lambda wc: get_merged_bam(wc)[1],
+        ref=config["ref"]["genome"]
+    output:
+        f"{OUTDIR}/mutect/{{sample}}.vcf.gz"
+    threads: get_resource("mutect","threads")
+    resources:
+        mem = get_resource("mutect","mem")
+    conda: "../envs/gatk.yaml"
+    log:
+        f"{LOGDIR}/gatk/mutect.{{sample}}.log"
+    shell:"""
+        gatk Mutect2 -R {input.ref} -I {input.bam} -tumor {wildcards.sample} -O {output}
+    """

@@ -30,6 +30,7 @@ include: "rules/common.smk"
 rule all:
     input:
         f"{OUTDIR}/annotated/all.vcf.gz",
+        ["{OUTDIR}/mutect/{sample}.vcf.gz".format(OUTDIR=OUTDIR,sample=s[1]) for s in samples.itertuples()],
         f"{OUTDIR}/qc/multiqc.html",
         f"{OUTDIR}/plots/depths.svg",
         f"{OUTDIR}/plots/allele-freqs.svg"

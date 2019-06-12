@@ -51,6 +51,13 @@ def get_sample_bams(wildcards):
                   sample=wildcards.sample,
                   unit=units.loc[wildcards.sample].unit)
 
+def get_merged_bam(wc):
+    """Merge aligned reads if there are multiple units."""
+    bams = get_sample_bams(wc)
+    if len(bams) > 1:
+        return f"{OUTDIR}/merged_bams/{wc.sample}.bam",f"{OUTDIR}/merged_bams/{wc.sample}.bam.bai"
+    else:
+        return bams[0]
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
     if regions:
