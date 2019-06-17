@@ -10,4 +10,4 @@ properties:
     description: sample type, target or control
 required:
   - sample
-  - tissue
+  - class
