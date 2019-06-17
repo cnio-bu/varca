@@ -5,6 +5,9 @@ properties:
   sample:
     type: string
     description: sample name/identifier
-
+  class:
+    type: string
+    description: sample type, target or control
 required:
   - sample
+  - tissue
