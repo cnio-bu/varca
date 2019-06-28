@@ -21,7 +21,7 @@ if "restrict-regions" in config["processing"]:
 
 rule call_variants:
     input:
-        bam=get_sample_bams,
+        bam=lambda wc: get_sample_bams(wc.sample),
         ref=config["ref"]["genome"],
         known=config["ref"]["known-variants"],
         regions=f"{OUTDIR}/called/{{contig}}.regions.bed" if config["processing"].get("restrict-regions") else []
@@ -84,7 +84,7 @@ rule merge_variants:
         "0.35.0/bio/picard/mergevcfs"
 
 rule merge_bams:
-    input: get_sample_bams
+    input: lambda wc: get_sample_bams(wc.sample),
     output:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     threads: get_resource("merge_bams","threads")
@@ -121,11 +121,16 @@ rule samtools_index_merged:
 
 rule mutect:
     input:
-        bam=lambda wc: get_merged_bam(wc)[0],
-        bai=lambda wc: get_merged_bam(wc)[1],
+        bam=lambda wc: get_merged_bam(wc.sample)[0],
+        bai=lambda wc: get_merged_bam(wc.sample)[1],
+        cbam=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"][0])[0],
+        cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"][0])[1],
         ref=config["ref"]["genome"]
     output:
         f"{OUTDIR}/mutect/{{sample}}.vcf.gz"
+    params:
+        regions=lambda wc: get_mutect_params(wc.sample)[0],
+        normal=lambda wc: get_mutect_params(wc.sample)[1]
     threads: get_resource("mutect","threads")
     resources:
         mem = get_resource("mutect","mem")
@@ -133,5 +138,5 @@ rule mutect:
     log:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"
     shell:"""
-        gatk Mutect2 -R {input.ref} -I {input.bam} -tumor {wildcards.sample} -O {output}
+        gatk Mutect2 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output}
     """
