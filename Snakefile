@@ -31,7 +31,7 @@ rule all:
     input:
         f"{OUTDIR}/annotated/all.vcf.gz",
         ["{OUTDIR}/mutect/{sample}.vcf.gz".format(OUTDIR=OUTDIR,sample=s[1]) for s in samples.itertuples() if (s[2] != "-")],
-        ["{OUTDIR}/mutect_filter/{sample}_passlable.vcf.gz".format(OUTDIR=OUTDIR,sample=s[1]) for s in samples.itertuples() if (s[2] != "-")],
+        ["{OUTDIR}/mutect_filter/{sample}_passlable_filtered.vcf.gz".format(OUTDIR=OUTDIR,sample=s[1]) for s in samples.itertuples() if (s[2] != "-")],
         f"{OUTDIR}/qc/multiqc.html",
         f"{OUTDIR}/plots/depths.svg",
         f"{OUTDIR}/plots/allele-freqs.svg"
