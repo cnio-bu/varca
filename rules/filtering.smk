@@ -75,3 +75,16 @@ rule merge_calls:
         mem = get_resource("merge_calls","mem")
     wrapper:
         "0.35.0/bio/picard/mergevcfs"
+
+rule filter_mutect_calls:
+    input:
+        vcf=f"{OUTDIR}/mutect/{{sample}}.vcf.gz",
+        ref=config["ref"]["genome"]
+    output:
+        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable.vcf.gz"
+    conda: "../envs/gatk.yaml"
+    log:
+        f"{LOGDIR}/gatk/mutect_filter.{{sample}}.log"
+    shell:"""
+        gatk FilterMutectCalls -R {input.ref} -V {input.vcf} -O {output}
+    """

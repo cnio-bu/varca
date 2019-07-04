@@ -7,9 +7,9 @@ logdir: "log"
 ref:
   name: GRCh37.75
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
-  genome: /home/tdidomenico/tmp/varca_res/hg19.fa
+  genome: /home/epineiro/REFERENCES/Homo_sapiens/HG19/hg19.fa
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known-variants: /home/tdidomenico/tmp/varca_res/dbsnp_150.hg19.vcf
+  known-variants: /home/epineiro/REFERENCES/Homo_sapiens/HG19/dbsnp_150.hg19.vcf
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
@@ -27,7 +27,7 @@ processing:
   remove-duplicates: true
   # Uncomment and point to a bed file with, e.g., captured regions if necessary,
   # see https://gatkforums.broadinstitute.org/gatk/discussion/4133/when-should-i-use-l-to-pass-in-a-list-of-intervals.
-  restrict-regions: /home/tdidomenico/tmp/varca_res/CCP.20131001.designed.bed
+  restrict-regions: /home/epineiro/REFERENCES/Homo_sapiens/HG19/CCP.20131001.designed.bed
   # If regions are restricted, uncomment this to enlarge them by the given value in order to include
   # flanking areas.
   # region-padding: 100
