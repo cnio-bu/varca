@@ -88,3 +88,14 @@ rule filter_mutect_calls:
     shell:"""
         gatk FilterMutectCalls -R {input.ref} -V {input.vcf} -O {output}
     """
+
+rule filter_mutect_2:
+    input:
+        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable.vcf.gz",
+        ref=config["ref"]["genome"]
+    output:
+        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable_filtered.vcf.gz"
+    params:
+        filters={"DPfilter": config["filtering"]["depth"]}
+    wrapper:
+        "0.35.0/bio/gatk/variantfiltration"
