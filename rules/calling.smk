@@ -138,5 +138,5 @@ rule mutect:
     log:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"
     shell:"""
-        gatk Mutect2 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output}
+        gatk Mutect2 --callable-depth 1 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output}
     """
