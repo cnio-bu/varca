@@ -1,4 +1,3 @@
-
 ##### Wildcard constraints #####
 wildcard_constraints:
     vartype="snvs|indels",
@@ -45,12 +44,19 @@ def get_trimmed_reads(wildcards):
     return f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.fastq.gz".format(**wildcards)
 
 
-def get_sample_bams(wildcards):
+def get_sample_bams(sample):
     """Get all aligned reads of given sample."""
     return expand(f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
-                  sample=wildcards.sample,
-                  unit=units.loc[wildcards.sample].unit)
+                    sample=sample,
+                    unit=units.loc[sample].unit)
 
+def get_merged_bam(sample):
+    """Merge aligned reads if there are multiple units."""
+    bams = get_sample_bams(sample)
+    if len(bams) > 1:
+        return f"{OUTDIR}/merged_bams/{sample}.bam",f"{OUTDIR}/merged_bams/{sample}.bam.bai"
+    else:
+        return bams[0],bams[0] + ".bai"
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
     if regions:
@@ -83,3 +89,14 @@ def get_recal_input(bai=False):
             return []
     else:
         return f
+
+def get_mutect_params(sample):
+    if config["processing"].get("restrict-regions"):
+        regions_call="-L "+config["processing"].get("restrict-regions")
+    else:
+        regions_call=""
+    if samples.loc[(sample),"control"][0] != sample:
+        normal_call="-I "+get_merged_bam(samples.loc[(sample),"control"][0])[0]+" -normal "+samples.loc[(sample),"control"][0]
+    else:
+        normal_call=""
+    return regions_call,normal_call
