@@ -33,8 +33,12 @@ if "restrict-regions" in config["processing"]:
             temp("{OUTDIR}/regions.intervals")
         conda:
             "../envs/picard.yaml"
+        resources:
+            mem = get_resource("bed_to_interval","mem")
+        params:
+            extra = "-Xmx{}m".format(get_resource("bed_to_interval","mem"))
         shell:
-            "picard BedToIntervalList I={input.file} O={output} SD={input.SD}"
+            "picard BedToIntervalList {params.extra} I={input.file} O={output} SD={input.SD}"
 
     rule picard_collect_hs_metrics:
         input:
@@ -48,7 +52,9 @@ if "restrict-regions" in config["processing"]:
             f"{LOGDIR}/picard_collect_hs_metrics/{{sample}}-{{unit}}.log"
         threads: 1
         resources:
-            mem = 4000
+            mem = get_resource("picard_collect_hs_metrics","mem")
+        params:
+            extra = "-Xmx{}m".format(get_resource("picard_collect_hs_metrics","mem"))
         wrapper:
             "0.35.0/bio/picard/collecthsmetrics"
 

@@ -67,7 +67,7 @@ rule mark_duplicates:
     resources:
         mem = get_resource("mark_duplicates","mem")
     params:
-        config["params"]["picard"]["MarkDuplicates"]
+        config["params"]["picard"]["MarkDuplicates"] + " -Xmx{}m".format(get_resource("mark_duplicates","mem"))
     wrapper:
         "0.35.0/bio/picard/markduplicates"
 

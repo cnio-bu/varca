@@ -80,6 +80,8 @@ rule merge_variants:
     threads: get_resource("merge_variants","threads")
     resources:
         mem = get_resource("merge_variants","mem")
+    params:
+        extra = "-Xmx{}m".format(get_resource("merge_variants","mem"))
     wrapper:
         "0.35.0/bio/picard/mergevcfs"
 
