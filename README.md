@@ -1,4 +1,4 @@
-# Snakemake workflow: dna-seq-gatk-variant-calling
+![Varca](img/logo.png)
 
 [![Snakemake](https://img.shields.io/badge/snakemake-≥5.1.5-brightgreen.svg)](https://snakemake.bitbucket.io)
 [![build status](https://gitlab.com/bu_cnio/varca/badges/master/pipeline.svg)](https://gitlab.com/bu_cnio/varca/commits/master)
