@@ -6,9 +6,11 @@
 
 This Snakemake pipeline implements the [GATK best-practices workflow](https://software.broadinstitute.org/gatk/best-practices/workflow?id=11145) for calling small genomic variants.
 
+It's based on [this workflow](https://github.com/snakemake-workflows/dna-seq-gatk-variant-calling/releases) by Johannes Köster.
+
 ## Authors
 
-* Johannes Köster
+* Elena Piñeiro
 * Tomás Di Domenico
 
 ## Usage
@@ -78,4 +80,4 @@ The following recipe provides established best practices for running and extendi
 
 ## Testing
 
-Tests cases are in the subfolder `.test`. They are automtically executed via continuous integration with Travis CI.
+Tests cases are in the subfolder `.test`. They are automtically executed via continuous integration.
