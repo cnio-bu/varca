@@ -1,15 +1,16 @@
 samples: samples.tsv
 units: units.tsv
+contigs: contigs.tsv
 
 outdir: "out"
 logdir: "log"
 
 ref:
-  name: GRCh38.86
+  name: GRCh38
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
-  genome: data/ref/genome.chr21.fa
+  genome: /home/epineiro/REFERENCES/Homo_sapiens/HG38/hg38.fa
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known-variants: data/ref/dbsnp.vcf.gz
+  known-variants: /home/epineiro/REFERENCES/Homo_sapiens/HG38/dbsnp_151.hg38.vcf
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
@@ -19,15 +20,16 @@ filtering:
     # hard filtering as outlined in GATK docs
     # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
     snvs:
-      "QD < 2.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
+      "QD < 2.0 || QUAL < 100.0 || DP < 10.0 || SOR > 3.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
     indels:
-      "QD < 2.0 || FS > 200.0 || ReadPosRankSum < -20.0"
+      "QD < 2.0 || QUAL < 100 || DP < 10.0 || FS > 200.0 || ReadPosRankSum < -20.0"
+  depth: "DP < 10"
 
 processing:
   remove-duplicates: true
   # Uncomment and point to a bed file with, e.g., captured regions if necessary,
   # see https://gatkforums.broadinstitute.org/gatk/discussion/4133/when-should-i-use-l-to-pass-in-a-list-of-intervals.
-  # restrict-regions: captured_regions.bed
+  restrict-regions: /home/epineiro/REFERENCES/Homo_sapiens/HG38/S04380219_Padded_v5_hg38_varca.bed
   # If regions are restricted, uncomment this to enlarge them by the given value in order to include
   # flanking areas.
   # region-padding: 100
@@ -56,27 +58,52 @@ params:
         - "SLIDINGWINDOW:4:15"
         - "MINLEN:36"
 
+annotation:
+  vep:
+    cache: true
+    #Indicate the version of the cache if set to true. e.g. 100
+    cache_version: 100
+    #Indicate the path to the cache files if set to true
+    cache_directory: /home/epineiro/Programs/VEP/VEP100/.vep/
+    #Indicate assembly version
+    assembly: GRCh38
+    #Indicate the annotations to include
+    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris"
+
 resources:
     default:
         threads: 1
-        mem: 2000
+        mem: 32000
+        walltime: 480
     snpeff:
         mem: 8000
+        walltime: 480
     call_variants:
         mem: 10000
         threads: 4
+        walltime: 480
     combine_calls:
         mem: 8000
         threads: 1
+        walltime: 480
     hard_filter_calls:
         mem: 8000
+        walltime: 480
     trim_reads:
         mem: 4000
         threads: 16
+        walltime: 480
     map_reads:
         mem: 8000
         threads: 8
+        walltime: 480
     recalibrate_base_qualities:
         mem: 4000
+        walltime: 480
     mark_duplicates:
         mem: 32000
+        walltime: 480
+    vep:
+        mem: 32000
+        threads: 32
+        walltime: 480
