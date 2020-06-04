@@ -1,15 +1,15 @@
 rule fastqc:
     input:
-        unpack(get_fastq)
+        lambda wc: get_fastq(wc)[wc.read]
     output:
-        html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}.html",
-        zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}.zip"
+        html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}.html",
+        zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}.zip"
     threads: get_resource("fastqc","threads")
     resources:
-        mem = get_resource("fastqc","mem")
+        mem = get_resource("fastqc","mem"),
+        walltime = get_resource("fastqc","walltime")
     wrapper:
-        "https://bitbucket.org/tdido/snakemake-wrappers/raw/195d5bbcbbdab720554bc4046c5015e1c6e04114/bio/fastqc"
-
+        "0.35.0/bio/fastqc"
 
 rule samtools_stats:
     input:
@@ -20,21 +20,42 @@ rule samtools_stats:
         f"{LOGDIR}/samtools-stats/{{sample}}-{{unit}}.log"
     threads: get_resource("samtools_stats","threads")
     resources:
-        mem = get_resource("samtools_stats","mem")
+        mem = get_resource("samtools_stats","mem"),
+        walltime = get_resource("samtools_stats","walltime")
     wrapper:
         "0.35.0/bio/samtools/stats"
+
+rule genome_dict:
+    input:
+        genome=config["ref"]["genome"]
+    output:
+        dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
+    threads: get_resource("genome_dict","threads")
+    resources:
+        mem = get_resource("genome_dict","mem"),
+        walltime = get_resource("genome_dict","walltime")
+    conda:
+        "../envs/gatk.yaml"
+    log:
+        stdout=f"{LOGDIR}/genome_dict/log.out",
+        stderr=f"{LOGDIR}/genome_dict/log.err"
+    shell:"""
+        gatk CreateSequenceDictionary -R {input.genome} > {log.stdout} 2> {log.stderr}
+    """
 
 if "restrict-regions" in config["processing"]:
     rule bed_to_interval:
         input:
             file=config["processing"]["restrict-regions"],
-            SD=config["ref"]["genome"]
+            SD=config["ref"]["genome"],
+            dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
         output:
-            temp("{OUTDIR}/regions.intervals")
+            temp(f"{OUTDIR}/regions.intervals")
         conda:
             "../envs/picard.yaml"
         resources:
-            mem = get_resource("bed_to_interval","mem")
+            mem = get_resource("bed_to_interval","mem"),
+            walltime = get_resource("bed_to_interval","walltime")
         params:
             extra = "-Xmx{}m".format(get_resource("bed_to_interval","mem"))
         shell:
@@ -50,9 +71,10 @@ if "restrict-regions" in config["processing"]:
             f"{OUTDIR}/qc/picard/{{sample}}-{{unit}}.txt"
         log:
             f"{LOGDIR}/picard_collect_hs_metrics/{{sample}}-{{unit}}.log"
-        threads: 1
+        threads: get_resource("picard_collect_hs_metrics","threads")
         resources:
-            mem = get_resource("picard_collect_hs_metrics","mem")
+            mem = get_resource("picard_collect_hs_metrics","mem"),
+            walltime = get_resource("picard_collect_hs_metrics","walltime")
         params:
             extra = "-Xmx{}m".format(get_resource("picard_collect_hs_metrics","mem"))
         wrapper:
@@ -60,7 +82,8 @@ if "restrict-regions" in config["processing"]:
 
 rule multiqc:
     input:
-         expand(f"{OUTDIR}/qc/fastqc/{{u.sample}}-{{u.unit}}.zip", u=units.itertuples()),
+         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}.zip", r=["r1"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) == "nan")],
+         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}.zip", r=["r1","r2"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) != "nan")],
          expand(f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/picard/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()) if config["processing"].get("restrict-regions") else [],
@@ -71,6 +94,7 @@ rule multiqc:
         f"{LOGDIR}/multiqc.log"
     threads: get_resource("multiqc","threads")
     resources:
-        mem = get_resource("multiqc","mem")
+        mem = get_resource("multiqc","mem"),
+        walltime = get_resource("multiqc","walltime")
     wrapper:
         "0.35.0/bio/multiqc"

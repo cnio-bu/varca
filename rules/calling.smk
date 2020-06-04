@@ -31,7 +31,8 @@ rule call_variants:
         f"{LOGDIR}/gatk/haplotypecaller/{{sample}}.{{contig}}.log"
     threads: get_resource("call_variants","threads")
     resources:
-        mem = get_resource("call_variants","mem")
+        mem = get_resource("call_variants","mem"),
+        walltime = get_resource("call_variants","walltime")
     params:
         extra=get_call_variants_params
     wrapper:
@@ -48,7 +49,8 @@ rule combine_calls:
         f"{LOGDIR}/gatk/combinegvcfs.{{contig}}.log"
     threads: get_resource("combine_calls","threads")
     resources:
-        mem = get_resource("combine_calls","mem")
+        mem = get_resource("combine_calls","mem"),
+        walltime = get_resource("combine_calls","walltime")
     wrapper:
         "0.35.0/bio/gatk/combinegvcfs"
 
@@ -65,7 +67,8 @@ rule genotype_variants:
         f"{LOGDIR}/gatk/genotypegvcfs.{{contig}}.log"
     threads: get_resource("genotype_variants","threads")
     resources:
-        mem = get_resource("genotype_variants","mem")
+        mem = get_resource("genotype_variants","mem"),
+        walltime = get_resource("genotype_variants","walltime")
     wrapper:
         "0.35.0/bio/gatk/genotypegvcfs"
 
@@ -79,7 +82,8 @@ rule merge_variants:
         f"{LOGDIR}/picard/merge-genotyped.log"
     threads: get_resource("merge_variants","threads")
     resources:
-        mem = get_resource("merge_variants","mem")
+        mem = get_resource("merge_variants","mem"),
+        walltime = get_resource("merge_variants","walltime")
     params:
         extra = "-Xmx{}m".format(get_resource("merge_variants","mem"))
     wrapper:
@@ -91,7 +95,8 @@ rule merge_bams:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     threads: get_resource("merge_bams","threads")
     resources:
-        mem = get_resource("merge_bams","mem")
+        mem = get_resource("merge_bams","mem"),
+        walltime = get_resource("merge_bams","walltime")
     wrapper:
         "0.35.0/bio/samtools/merge"
 
@@ -102,7 +107,8 @@ rule samtools_index_recal:
         f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam.bai"
     threads: get_resource("samtools_index","threads")
     resources:
-        mem = get_resource("samtools_index","mem")
+        mem = get_resource("samtools_index","mem"),
+        walltime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index_recal/{{sample}}-{{unit}}.log"
     wrapper:
@@ -115,7 +121,8 @@ rule samtools_index_merged:
         f"{OUTDIR}/merged_bams/{{sample}}.bam.bai"
     threads: get_resource("samtools_index","threads")
     resources:
-        mem = get_resource("samtools_index","mem")
+        mem = get_resource("samtools_index","mem"),
+        walltime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     wrapper:
@@ -125,8 +132,8 @@ rule mutect:
     input:
         bam=lambda wc: get_merged_bam(wc.sample)[0],
         bai=lambda wc: get_merged_bam(wc.sample)[1],
-        cbam=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"][0])[0],
-        cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"][0])[1],
+        cbam=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[0],
+        cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[1],
         ref=config["ref"]["genome"]
     output:
         f"{OUTDIR}/mutect/{{sample}}.vcf.gz"
@@ -135,10 +142,11 @@ rule mutect:
         normal=lambda wc: get_mutect_params(wc.sample)[1]
     threads: get_resource("mutect","threads")
     resources:
-        mem = get_resource("mutect","mem")
+        mem = get_resource("mutect","mem"),
+        walltime = get_resource("mutect","walltime")
     conda: "../envs/gatk.yaml"
     log:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"
     shell:"""
-        gatk Mutect2 --callable-depth 1 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output}
+        gatk Mutect2 --callable-depth 1 --native-pair-hmm-threads 16 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output}
     """

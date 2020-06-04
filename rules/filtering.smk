@@ -15,7 +15,8 @@ rule select_calls:
         f"{LOGDIR}/gatk/selectvariants/{{vartype}}.log"
     threads: get_resource("select_calls","threads")
     resources:
-        mem = get_resource("select_calls","mem")
+        mem = get_resource("select_calls","mem"),
+        walltime = get_resource("select_calls","walltime")
     wrapper:
         "0.35.0/bio/gatk/selectvariants"
 
@@ -36,7 +37,8 @@ rule hard_filter_calls:
         filters=get_filter
     threads: get_resource("hard_filter_calls","threads")
     resources:
-        mem = get_resource("hard_filter_calls","mem")
+        mem = get_resource("hard_filter_calls","mem"),
+        walltime = get_resource("hard_filter_calls","walltime")
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{vartype}}.log"
     wrapper:
@@ -54,7 +56,8 @@ rule recalibrate_calls:
         f"{LOGDIR}/gatk/variantrecalibrator/{{vartype}}.log"
     threads: get_resource("recalibrate_calls","threads")
     resources:
-        mem = get_resource("recalibrate_calls","mem")
+        mem = get_resource("recalibrate_calls","mem"),
+        walltime = get_resource("recalibrate_calls","walltime")
     wrapper:
         "0.35.0/bio/gatk/variantrecalibrator"
 
@@ -72,7 +75,8 @@ rule merge_calls:
         f"{LOGDIR}/picard/merge-filtered.log"
     threads: get_resource("merge_calls","threads")
     resources:
-        mem = get_resource("merge_calls","mem")
+        mem = get_resource("merge_calls","mem"),
+        walltime = get_resource("merge_calls","walltime")
     params:
         extra = "-Xmx{}m".format(get_resource("merge_calls","mem"))
     wrapper:

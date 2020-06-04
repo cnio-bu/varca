@@ -1,5 +1,6 @@
 samples: samples.tsv
 units: units.tsv
+contigs: contigs.tsv
 
 outdir: "out"
 logdir: "log"
@@ -49,9 +50,52 @@ params:
         - "SLIDINGWINDOW:4:15"
         - "MINLEN:36"
 
+annotation:
+  vep:
+    cache: false
+    #Indicate the version of the cache if set to true. e.g. 100
+    cache_version: 100
+    #Indicate the path to the cache files if set to true
+    cache_directory: /home/epineiro/Programs/VEP/VEP100/.vep/
+    #Indicate assembly version
+    assembly: GRCh38
+    #Indicate the annotations to include
+    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --appris --format vcf"
+
 resources:
     default:
         threads: 1
         mem: 2000
+        walltime: 480
     snpeff:
         mem: 8000
+        walltime: 480
+    call_variants:
+        mem: 2000
+        threads: 4
+        walltime: 480
+    combine_calls:
+        mem: 2000
+        threads: 1
+        walltime: 480
+    hard_filter_calls:
+        mem: 2000
+        walltime: 480
+    trim_reads:
+        mem: 2000
+        threads: 16
+        walltime: 480
+    map_reads:
+        mem: 2000
+        threads: 8
+        walltime: 480
+    recalibrate_base_qualities:
+        mem: 2000
+        walltime: 480
+    mark_duplicates:
+        mem: 2000
+        walltime: 480
+    vep:
+        mem: 2000
+        threads: 32
+        walltime: 480

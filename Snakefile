@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 from snakemake.utils import validate
 
 singularity: "docker://continuumio/miniconda3:4.6.14"
@@ -20,8 +21,12 @@ units.index = units.index.set_levels([i.astype(str) for i in units.index.levels]
 validate(units, schema="schemas/units.schema.yaml")
 
 # contigs in reference genome
-contigs = pd.read_csv(config["ref"]["genome"] + ".fai", sep="\t",
-                        header=None, usecols=[0], squeeze=True, dtype=str)
+if os.stat(config["contigs"]).st_size != 0:
+    print(os.stat(config["contigs"]).st_size)
+    contigs = pd.read_csv(config["contigs"],sep="\t",header=None,usecols=[0],squeeze=True,dtype=str)
+else:
+    contigs = pd.read_csv(config["ref"]["genome"] + ".fai", sep="\t",
+                            header=None, usecols=[0], squeeze=True, dtype=str)
 
 include: "rules/common.smk"
 
@@ -30,7 +35,8 @@ include: "rules/common.smk"
 rule all:
     input:
         f"{OUTDIR}/annotated/all.vcf.gz",
-        ["{OUTDIR}/mutect_filter/{sample}_passlable_filtered.vcf.gz".format(OUTDIR=OUTDIR,sample=s[1]) for s in samples.itertuples() if (s[2] != "-")],
+        f"{OUTDIR}/annotated/all.vep.vcf.gz",
+        ["{OUTDIR}/annotated/{sample}_mutect.vep.vcf.gz".format(OUTDIR=OUTDIR,sample=getattr(row, 'sample')) for row in samples.itertuples() if (getattr(row, 'control') != "-")],
         f"{OUTDIR}/qc/multiqc.html",
         f"{OUTDIR}/plots/depths.svg",
         f"{OUTDIR}/plots/allele-freqs.svg"
