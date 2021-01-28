@@ -22,5 +22,5 @@ tests:
     - source activate snakemake
     # run the workflow
     # put a test case into the subfolder .test (e.g., use https://gitlab.com/bu_cnio/ngs-test-data as a submodule)
-    - snakemake --use-conda --directory .test
-    - snakemake --directory .test --report report.html
+    - snakemake --cores 4 --use-conda --directory .test
+    - snakemake --cores 1 --directory .test --report report.html
