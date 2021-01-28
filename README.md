@@ -1,9 +1,5 @@
 ![Varca](img/logo.png)
 
-[![Snakemake](https://img.shields.io/badge/snakemake-≥5.1.5-brightgreen.svg)](https://snakemake.bitbucket.io)
-[![build status](https://gitlab.com/bu_cnio/varca/badges/master/pipeline.svg)](https://gitlab.com/bu_cnio/varca/commits/master)
-[![Snakemake-Report](https://img.shields.io/badge/snakemake-report-green.svg)](https://cdn.rawgit.com/snakemake-workflows/dna-seq-gatk-variant-calling/master/.test/report.html)
-
 This Snakemake pipeline implements the [GATK best-practices workflow](https://software.broadinstitute.org/gatk/best-practices/workflow?id=11145) for calling small genomic variants.
 
 It's based on [this workflow](https://github.com/snakemake-workflows/dna-seq-gatk-variant-calling/releases) by Johannes Köster.
