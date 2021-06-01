@@ -3,7 +3,7 @@ if "restrict-regions" in config["processing"]:
         input:
             config["processing"]["restrict-regions"]
         output:
-            temp("called/regions.sorted.bed")
+            temp("{OUTDIR}/called/regions.sorted.bed")
         conda:
             "../envs/bedops.yaml"
         shell:
@@ -11,7 +11,7 @@ if "restrict-regions" in config["processing"]:
 
     rule compose_regions:
         input:
-            "called/regions.sorted.bed"
+            f"{OUTDIR}/called/regions.sorted.bed"
         output:
             f"{OUTDIR}/called/{{contig}}.regions.bed"
         conda:
