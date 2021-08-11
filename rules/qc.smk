@@ -2,8 +2,8 @@ rule fastqc:
     input:
         lambda wc: get_fastq(wc)[wc.read]
     output:
-        html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}.html",
-        zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}.zip"
+        html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_fastqc.html",
+        zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_fastqc.zip"
     threads: get_resource("fastqc","threads")
     resources:
         mem = get_resource("fastqc","mem"),
@@ -82,8 +82,8 @@ if "restrict-regions" in config["processing"]:
 
 rule multiqc:
     input:
-         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}.zip", r=["r1"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) == "nan")],
-         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}.zip", r=["r1","r2"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) != "nan")],
+         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_fastqc.zip", r=["r1"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) == "nan")],
+         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_fastqc.zip", r=["r1","r2"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) != "nan")],
          expand(f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/picard/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()) if config["processing"].get("restrict-regions") else [],
