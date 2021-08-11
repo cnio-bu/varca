@@ -100,25 +100,11 @@ rule merge_bams:
     wrapper:
         "0.35.0/bio/samtools/merge"
 
-rule samtools_index_recal:
-    input:
-        f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam"
-    output:
-        f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam.bai"
-    threads: get_resource("samtools_index","threads")
-    resources:
-        mem = get_resource("samtools_index","mem"),
-        walltime = get_resource("samtools_index","walltime")
-    log:
-        f"{LOGDIR}/samtools/index_recal/{{sample}}-{{unit}}.log"
-    wrapper:
-        "0.35.0/bio/samtools/index"
-
 rule samtools_index_merged:
     input:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     output:
-        f"{OUTDIR}/merged_bams/{{sample}}.bam.bai"
+        f"{OUTDIR}/merged_bams/{{sample}}.bai"
     threads: get_resource("samtools_index","threads")
     resources:
         mem = get_resource("samtools_index","mem"),
@@ -132,8 +118,6 @@ rule mutect:
     input:
         bam=lambda wc: get_merged_bam(wc.sample)[0],
         bai=lambda wc: get_merged_bam(wc.sample)[1],
-        cbam=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[0],
-        cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[1],
         ref=config["ref"]["genome"]
     output:
         f"{OUTDIR}/mutect/{{sample}}.vcf.gz"

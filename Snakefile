@@ -22,7 +22,6 @@ validate(units, schema="schemas/units.schema.yaml")
 
 # contigs in reference genome
 if os.stat(config["contigs"]).st_size != 0:
-    print(os.stat(config["contigs"]).st_size)
     contigs = pd.read_csv(config["contigs"],sep="\t",header=None,usecols=[0],squeeze=True,dtype=str)
 else:
     contigs = pd.read_csv(config["ref"]["genome"] + ".fai", sep="\t",

@@ -54,9 +54,9 @@ def get_merged_bam(sample):
     """Merge aligned reads if there are multiple units."""
     bams = get_sample_bams(sample)
     if len(bams) > 1:
-        return f"{OUTDIR}/merged_bams/{sample}.bam",f"{OUTDIR}/merged_bams/{sample}.bam.bai"
+        return f"{OUTDIR}/merged_bams/{sample}.bam",f"{OUTDIR}/merged_bams/{sample}.bai"
     else:
-        return bams[0],bams[0] + ".bai"
+        return bams[0],bams[0].replace(".bam",".bai")
 
 def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
     if regions:
@@ -82,7 +82,7 @@ def get_recal_input(bai=False):
     if bai:
         if config["processing"].get("restrict-regions"):
             # case 3: need an index because random access is required
-            f += ".bai"
+            f = f.replace(".bam",".bai")
             return f
         else:
             # case 4: no index needed

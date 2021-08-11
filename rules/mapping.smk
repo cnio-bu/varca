@@ -117,7 +117,8 @@ rule recalibrate_base_qualities:
         ref_idx=f"{config['ref']['genome']}.fai",
         known=config["ref"]["known-variants"]
     output:
-        bam=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam"
+        bam=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
+        bai=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bai"
     params:
         extra=get_regions_param() + config["params"]["gatk"]["BaseRecalibrator"]
     log:
@@ -133,7 +134,7 @@ rule samtools_index:
     input:
         f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam"
     output:
-        f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam.bai"
+        f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bai"
     threads: get_resource("samtools_index","threads")
     resources:
         mem = get_resource("samtools_index","mem"),
