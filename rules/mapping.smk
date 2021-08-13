@@ -115,7 +115,8 @@ rule recalibrate_base_qualities:
         bai=get_recal_input(bai=True),
         ref=config["ref"]["genome"],
         ref_idx=f"{config['ref']['genome']}.fai",
-        known=config["ref"]["known-variants"]
+        known=config["ref"]["known-variants"],
+        known_idx=f"{config['ref']['known-variants']}.tbi"
     output:
         bam=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
         bai=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bai"
@@ -157,3 +158,19 @@ rule samtools_index_sorted:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
         "0.35.0/bio/samtools/index"
+
+rule index_known_variants:
+    input:
+        file=config['ref']['known-variants']
+    output:
+        index=f"{config['ref']['known-variants']}.tbi"
+    resources:
+        mem = get_resource("index_known_variants","mem"),
+        walltime = get_resource("index_known_variants","walltime")
+    conda:
+        "../envs/gatk.yaml"
+    log:
+        f"{LOGDIR}/gatk/index_known_variants.log"
+    shell:"""
+        gatk IndexFeatureFile -F {input.file} -O {output.index}
+    """
