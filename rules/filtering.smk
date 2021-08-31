@@ -15,10 +15,10 @@ rule select_calls:
         f"{LOGDIR}/gatk/selectvariants/{{vartype}}.log"
     threads: get_resource("select_calls","threads")
     resources:
-        mem = get_resource("select_calls","mem"),
+        mem_mb = get_resource("select_calls","mem"),
         walltime = get_resource("select_calls","walltime")
     wrapper:
-        "0.35.0/bio/gatk/selectvariants"
+        "0.77.0/bio/gatk/selectvariants"
 
 
 def get_filter(wildcards):
@@ -37,12 +37,12 @@ rule hard_filter_calls:
         filters=get_filter
     threads: get_resource("hard_filter_calls","threads")
     resources:
-        mem = get_resource("hard_filter_calls","mem"),
+        mem_mb = get_resource("hard_filter_calls","mem"),
         walltime = get_resource("hard_filter_calls","walltime")
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{vartype}}.log"
     wrapper:
-        "0.35.0/bio/gatk/variantfiltration"
+        "0.77.0/bio/gatk/variantfiltration"
 
 
 rule recalibrate_calls:
@@ -59,12 +59,12 @@ rule recalibrate_calls:
         mem = get_resource("recalibrate_calls","mem"),
         walltime = get_resource("recalibrate_calls","walltime")
     wrapper:
-        "0.35.0/bio/gatk/variantrecalibrator"
+        "0.77.0/bio/gatk/variantrecalibrator"
 
 
 rule merge_calls:
     input:
-        vcf=expand(f"{OUTDIR}/filtered/all.{{vartype}}.{{filtertype}}.vcf.gz",
+        vcfs=expand(f"{OUTDIR}/filtered/all.{{vartype}}.{{filtertype}}.vcf.gz",
                    vartype=["snvs", "indels"],
                    filtertype="recalibrated"
                               if config["filtering"]["vqsr"]
@@ -75,12 +75,12 @@ rule merge_calls:
         f"{LOGDIR}/picard/merge-filtered.log"
     threads: get_resource("merge_calls","threads")
     resources:
-        mem = get_resource("merge_calls","mem"),
+        mem_mb = get_resource("merge_calls","mem"),
         walltime = get_resource("merge_calls","walltime")
     params:
-        extra = "-Xmx{}m".format(get_resource("merge_calls","mem"))
+        extra = ""
     wrapper:
-        "0.35.0/bio/picard/mergevcfs"
+        "0.77.0/bio/picard/mergevcfs"
 
 rule filter_mutect_calls:
     input:
@@ -103,5 +103,11 @@ rule filter_mutect_2:
         vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable_filtered.vcf.gz"
     params:
         filters={"DPfilter": config["filtering"]["depth"]}
+    threads: get_resource("hard_filter_calls","threads")
+    resources:
+        mem_mb = get_resource("hard_filter_calls","mem"),
+        walltime = get_resource("hard_filter_calls","walltime")
+    log:
+        f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
     wrapper:
-        "0.35.0/bio/gatk/variantfiltration"
+        "0.77.0/bio/gatk/variantfiltration"

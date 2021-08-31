@@ -1,20 +1,33 @@
+rule snpeff_download:
+    output:
+        directory(f"resources/snpeff/{config['ref']['name']}")
+    log:
+        f"{LOGDIR}/snpeff/download/{config['ref']['name']}.log"
+    params:
+        reference=f"{config['ref']['name']}"
+    resources:
+        mem_mb = get_resource("snpeff","mem"),
+        walltime = get_resource("snpeff","walltime")
+    wrapper:
+        "0.77.0/bio/snpeff/download"
+
 rule snpeff:
     input:
-        f"{OUTDIR}/filtered/all.vcf.gz",
+        calls = f"{OUTDIR}/filtered/all.vcf.gz",
+        db = f"resources/snpeff/{config['ref']['name']}"
     output:
-        vcf=report(f"{OUTDIR}/annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
+        calls=report(f"{OUTDIR}/annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
         csvstats=f"{OUTDIR}/snpeff/all.csv"
     log:
-        "logs/snpeff.log"
+        f"{LOGDIR}/snpeff/snpeff.log"
     threads: get_resource("snpeff","threads")
     resources:
-        mem = get_resource("snpeff","mem"),
+        mem_mb = get_resource("snpeff","mem"),
         walltime = get_resource("snpeff","walltime")
     params:
-        reference=config["ref"]["name"],
-        extra="-Xmx{}m".format(get_resource("snpeff","mem"))
+        extra=""
     wrapper:
-        "0.35.0/bio/snpeff"
+        "0.77.0/bio/snpeff/annotate"
 
 rule vep_gatk:
     input:

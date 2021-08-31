@@ -31,12 +31,12 @@ rule call_variants:
         f"{LOGDIR}/gatk/haplotypecaller/{{sample}}.{{contig}}.log"
     threads: get_resource("call_variants","threads")
     resources:
-        mem = get_resource("call_variants","mem"),
+        mem_mb = get_resource("call_variants","mem"),
         walltime = get_resource("call_variants","walltime")
     params:
         extra=get_call_variants_params
     wrapper:
-        "0.35.0/bio/gatk/haplotypecaller"
+        "0.77.0/bio/gatk/haplotypecaller"
 
 
 rule combine_calls:
@@ -49,10 +49,10 @@ rule combine_calls:
         f"{LOGDIR}/gatk/combinegvcfs.{{contig}}.log"
     threads: get_resource("combine_calls","threads")
     resources:
-        mem = get_resource("combine_calls","mem"),
+        mem_mb = get_resource("combine_calls","mem"),
         walltime = get_resource("combine_calls","walltime")
     wrapper:
-        "0.35.0/bio/gatk/combinegvcfs"
+        "0.77.0/bio/gatk/combinegvcfs"
 
 
 rule genotype_variants:
@@ -67,27 +67,27 @@ rule genotype_variants:
         f"{LOGDIR}/gatk/genotypegvcfs.{{contig}}.log"
     threads: get_resource("genotype_variants","threads")
     resources:
-        mem = get_resource("genotype_variants","mem"),
+        mem_mb = get_resource("genotype_variants","mem"),
         walltime = get_resource("genotype_variants","walltime")
     wrapper:
-        "0.35.0/bio/gatk/genotypegvcfs"
+        "0.77.0/bio/gatk/genotypegvcfs"
 
 
 rule merge_variants:
     input:
-        vcf=expand(f"{OUTDIR}/genotyped/all.{{contig}}.vcf.gz", contig=contigs)
+        vcfs=expand(f"{OUTDIR}/genotyped/all.{{contig}}.vcf.gz", contig=contigs)
     output:
         vcf=f"{OUTDIR}/genotyped/all.vcf.gz"
     log:
         f"{LOGDIR}/picard/merge-genotyped.log"
     threads: get_resource("merge_variants","threads")
     resources:
-        mem = get_resource("merge_variants","mem"),
+        mem_mb = get_resource("merge_variants","mem"),
         walltime = get_resource("merge_variants","walltime")
     params:
-        extra = "-Xmx{}m".format(get_resource("merge_variants","mem"))
+        extra = ""
     wrapper:
-        "0.35.0/bio/picard/mergevcfs"
+        "0.77.0/bio/picard/mergevcfs"
 
 rule merge_bams:
     input: lambda wc: get_sample_bams(wc.sample),
@@ -98,7 +98,7 @@ rule merge_bams:
         mem = get_resource("merge_bams","mem"),
         walltime = get_resource("merge_bams","walltime")
     wrapper:
-        "0.35.0/bio/samtools/merge"
+        "0.77.0/bio/samtools/merge"
 
 rule samtools_index_merged:
     input:
@@ -112,7 +112,7 @@ rule samtools_index_merged:
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     wrapper:
-        "0.35.0/bio/samtools/index"
+        "0.77.0/bio/samtools/index"
 
 rule mutect:
     input:

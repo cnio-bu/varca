@@ -9,7 +9,7 @@ rule fastqc:
         mem = get_resource("fastqc","mem"),
         walltime = get_resource("fastqc","walltime")
     wrapper:
-        "0.35.0/bio/fastqc"
+        "0.77.0/bio/fastqc"
 
 rule samtools_stats:
     input:
@@ -23,7 +23,7 @@ rule samtools_stats:
         mem = get_resource("samtools_stats","mem"),
         walltime = get_resource("samtools_stats","walltime")
     wrapper:
-        "0.35.0/bio/samtools/stats"
+        "0.77.0/bio/samtools/stats"
 
 rule genome_dict:
     input:
@@ -73,12 +73,12 @@ if "restrict-regions" in config["processing"]:
             f"{LOGDIR}/picard_collect_hs_metrics/{{sample}}-{{unit}}.log"
         threads: get_resource("picard_collect_hs_metrics","threads")
         resources:
-            mem = get_resource("picard_collect_hs_metrics","mem"),
+            mem_mb = get_resource("picard_collect_hs_metrics","mem"),
             walltime = get_resource("picard_collect_hs_metrics","walltime")
         params:
-            extra = "-Xmx{}m".format(get_resource("picard_collect_hs_metrics","mem"))
+            extra = ""
         wrapper:
-            "0.35.0/bio/picard/collecthsmetrics"
+            "0.77.0/bio/picard/collecthsmetrics"
 
 rule multiqc:
     input:
@@ -97,4 +97,4 @@ rule multiqc:
         mem = get_resource("multiqc","mem"),
         walltime = get_resource("multiqc","walltime")
     wrapper:
-        "0.35.0/bio/multiqc"
+        "0.77.0/bio/multiqc"
