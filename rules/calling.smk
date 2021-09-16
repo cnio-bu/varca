@@ -14,10 +14,12 @@ if "restrict-regions" in config["processing"]:
             f"{OUTDIR}/called/regions.sorted.bed"
         output:
             f"{OUTDIR}/called/{{contig}}.regions.bed"
+        params:
+            contig = lambda wc: get_contig_file_name(wc.contig)
         conda:
             "../envs/bedops.yaml"
         shell:
-            "bedextract {wildcards.contig} {input} > {output}"
+            "bedextract {params.contig} {input} > {output}"
 
 rule call_variants:
     input:

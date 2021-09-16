@@ -3,8 +3,7 @@ wildcard_constraints:
     vartype="snvs|indels",
     sample="|".join(samples.index),
     unit="|".join(units["unit"]),
-    contig="|".join(contigs)
-
+    contig="|".join([re.escape(x) for x in contigs])
 
 ##### Helper functions #####
 
@@ -107,3 +106,7 @@ def get_vep_params():
     port="--port 3337" if config["annotation"]["vep"]["assembly"] == "GRCh37" else ""
     ann=config["annotation"]["vep"]["annotations"]
     return " ".join([cache, assembly, port, ann])
+
+def get_contig_file_name(contigfn):
+    contig = re.sub("___","*",contigfn)
+    return contig

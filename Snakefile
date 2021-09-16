@@ -26,6 +26,7 @@ if os.stat(config["contigs"]).st_size != 0:
 else:
     contigs = pd.read_csv(config["ref"]["genome"] + ".fai", sep="\t",
                             header=None, usecols=[0], squeeze=True, dtype=str)
+    contigs = [re.sub("\*","___",x) for x in contigs]
 
 include: "rules/common.smk"
 
