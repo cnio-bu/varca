@@ -6,7 +6,8 @@ outdir: "out"
 logdir: "log"
 
 ref:
-  name: GRCh38
+  # Genome database of snpeff to be used in the annotation with this resource. Available databases can be checked with java -jar snpEff.jar databases
+  name: GRCh38.86
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
   genome: /home/epineiro/REFERENCES/Homo_sapiens/HG38/hg38.fa
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
@@ -20,10 +21,11 @@ filtering:
     # hard filtering as outlined in GATK docs
     # (https://gatkforums.broadinstitute.org/gatk/discussion/2806/howto-apply-hard-filters-to-a-call-set)
     snvs:
-      "QD < 2.0 || QUAL < 100.0 || DP < 10.0 || SOR > 3.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
+      "QD < 2.0 || QUAL < 100.0 || DP < 50.0 || SOR > 3.0 || FS > 60.0 || MQ < 40.0 || MQRankSum < -12.5 || ReadPosRankSum < -8.0"
     indels:
       "QD < 2.0 || QUAL < 100 || DP < 10.0 || FS > 200.0 || ReadPosRankSum < -20.0"
-  depth: "DP < 10"
+  #depth of coverage threshold to apply to variants identified with MuTect2
+  depth: "DP < 30"
 
 processing:
   remove-duplicates: true
@@ -60,21 +62,22 @@ params:
 
 annotation:
   vep:
+    # If set to true, a cache directory must be created using the instructions of VEP. Using a cache allows for a fastest and most efficient way to use VEP
     cache: true
-    #Indicate the version of the cache if set to true. e.g. 100
+    #Indicate the version of the cache if cache is set to true. e.g. 100. This version must match the one indicated in the vep environment (vep.yaml). The version of vep.yaml can be modified according to the preferences, but version in cache and vep environment must be the same
     cache_version: 100
-    #Indicate the path to the cache files if set to true
+    #Indicate the path to the cache files if cache is set to true
     cache_directory: /home/epineiro/Programs/VEP/VEP100/.vep/
-    #Indicate assembly version
+    #Indicate the assembly version of the reference genome
     assembly: GRCh38
-    #Indicate the annotations to include
-    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris"
+    #Indicate the annotations to include with the VEP execution and additional parameters. See the documentation (https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html) for additional details.
+    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris --fasta /home/epineiro/Programs/VEP/VEP100/.vep/homo_sapiens/100_GRCh38/Homo_sapiens.GRCh38.dna.toplevel.fa.gz"
 
 resources:
     default:
         threads: 1
         mem: 32000
-        walltime: 480
+        walltime: 720
     snpeff:
         mem: 8000
         walltime: 480
@@ -94,16 +97,20 @@ resources:
         threads: 16
         walltime: 480
     map_reads:
-        mem: 8000
+        mem: 32000
         threads: 8
         walltime: 480
     recalibrate_base_qualities:
         mem: 4000
-        walltime: 480
+        walltime: 720
     mark_duplicates:
         mem: 32000
         walltime: 480
     vep:
         mem: 32000
+        threads: 4
+        walltime: 1440
+    mutect:
+        mem: 32000
         threads: 32
-        walltime: 480
+        walltime: 1440
