@@ -22,7 +22,53 @@ In any case, if you use this workflow in a paper, don't forget to give credits t
 
 #### Step 2: Configure workflow
 
-Configure the workflow according to your needs via editing the file `config.yaml`.
+Configure the workflow according to your needs via editing the files `config.yaml`, `contigs.tsv`, `samples.tsv` and `units.tsv`.
+
+**config.yaml**
+
+This file contains the paths to files required in the analysis, the enabling/disabling of optional steps, as well as additional parameters for some of the programs used in the process.
+
+The file is structured in several sections to be customized according to the characteristics of the analysis. The indications for its filling are provided inside the file.
+
+**contigs.tsv**
+
+It contains the contigs of the reference genome to include in the analysis (one contig per line). If empty, the analysis is performed using all contigs in the fasta index.
+
+**samples.tsv**
+
+It lists all samples to be included in the run, the use of MuTect2 and its execution mode. HaplotypeCaller will be executed for each sample in the `sample` column. To activate the execution of MuTect2 and set its execution mode, the `control` column is used. If control contains:
+
+- `-` MuTect2 is not executed for that sample.
+
+- The same sample name as in the `sample` column: MuTect2 is executed for that sample in tumor-only mode.
+- A different sample name than in the `sample` column: MuTect2 is executed in tumor-normal mode; being the tumor sample the one indicated in the `sample` column, and the normal sample the one indicated in the `control` column.
+
+Examples:
+
+- No MuTect2 execution:
+
+| sample | control |
+| ------ | ------ |
+| A | - |
+
+- MuTect2 execution in tumor-only mode:
+
+| sample | control |
+| ------ | ------ |
+| A | A |
+
+- MuTect2 execution in tumor-normal mode:
+
+| sample | control |
+| ------ | ------ |
+| A | B |
+| B | - |
+
+being A:tumor, B:normal
+
+**units.tsv**
+
+It contains the specifications of the samples (sequencing units, sequencing platform and fastq files) listed in `samples.tsv`, as described in the original workflow ([Step3: configure workflow](https://snakemake.github.io/snakemake-workflow-catalog/?usage=snakemake-workflows%2Fdna-seq-gatk-variant-calling)).
 
 #### Step 3: Execute workflow
 
