@@ -23,7 +23,7 @@ rule trim_reads_pe:
         r2=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.2.fastq.gz"),
         r1_unpaired=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.1.unpaired.fastq.gz"),
         r2_unpaired=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.2.unpaired.fastq.gz"),
-        trimlog=f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.trimlog.txt"
+        trimlog=temp(f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.trimlog.txt")
     params:
         extra=lambda w, output: "-trimlog {}".format(output.trimlog),
         **config["params"]["trimmomatic"]["pe"]
