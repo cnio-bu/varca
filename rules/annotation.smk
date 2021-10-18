@@ -9,7 +9,7 @@ rule snpeff_download:
         mem_mb = get_resource("snpeff","mem"),
         walltime = get_resource("snpeff","walltime")
     wrapper:
-        "0.77.0/bio/snpeff/download"
+        "0.79.0/bio/snpeff/download"
 
 rule snpeff:
     input:
@@ -27,7 +27,7 @@ rule snpeff:
     params:
         extra=""
     wrapper:
-        "0.77.0/bio/snpeff/annotate"
+        "0.79.0/bio/snpeff/annotate"
 
 rule vep_gatk:
     input:

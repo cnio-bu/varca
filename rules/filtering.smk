@@ -18,7 +18,7 @@ rule select_calls:
         mem_mb = get_resource("select_calls","mem"),
         walltime = get_resource("select_calls","walltime")
     wrapper:
-        "0.77.0/bio/gatk/selectvariants"
+        "0.79.0/bio/gatk/selectvariants"
 
 
 def get_filter(wildcards):
@@ -42,7 +42,7 @@ rule hard_filter_calls:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{vartype}}.log"
     wrapper:
-        "0.77.0/bio/gatk/variantfiltration"
+        "0.79.0/bio/gatk/variantfiltration"
 
 
 rule recalibrate_calls:
@@ -59,7 +59,7 @@ rule recalibrate_calls:
         mem = get_resource("recalibrate_calls","mem"),
         walltime = get_resource("recalibrate_calls","walltime")
     wrapper:
-        "0.77.0/bio/gatk/variantrecalibrator"
+        "0.79.0/bio/gatk/variantrecalibrator"
 
 
 rule merge_calls:
@@ -80,7 +80,7 @@ rule merge_calls:
     params:
         extra = ""
     wrapper:
-        "0.77.0/bio/picard/mergevcfs"
+        "0.79.0/bio/picard/mergevcfs"
 
 rule filter_mutect_calls:
     input:
@@ -110,4 +110,4 @@ rule filter_mutect_2:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
     wrapper:
-        "0.77.0/bio/gatk/variantfiltration"
+        "0.79.0/bio/gatk/variantfiltration"

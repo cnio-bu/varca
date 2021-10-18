@@ -13,7 +13,7 @@ rule trim_reads_se:
         mem_mb = get_resource("trim_reads","mem"),
         walltime = get_resource("trim_reads","walltime")
     wrapper:
-        "0.77.0/bio/trimmomatic/se"
+        "0.79.0/bio/trimmomatic/se"
 
 rule trim_reads_pe:
     input:
@@ -34,7 +34,7 @@ rule trim_reads_pe:
         mem_mb = get_resource("trim_reads","mem"),
         walltime = get_resource("trim_reads","walltime")
     wrapper:
-        "0.77.0/bio/trimmomatic/pe"
+        "0.79.0/bio/trimmomatic/pe"
 
 idx_cmd = "bwa index {input} > {log.out} 2> {log.err}"
 rule bwa_idx_genome:
@@ -56,7 +56,7 @@ rule bwa_idx_genome:
     benchmark:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
     wrapper:
-        "0.77.0/bio/bwa/index"
+        "0.79.0/bio/bwa/index"
 
 rule map_reads:
     input:
@@ -76,7 +76,7 @@ rule map_reads:
         mem = get_resource("map_reads","mem"),
         walltime = get_resource("map_reads","walltime")
     wrapper:
-        "0.77.0/bio/bwa/mem"
+        "0.79.0/bio/bwa/mem"
 
 rule mark_duplicates:
     input:
@@ -93,7 +93,7 @@ rule mark_duplicates:
     params:
         config["params"]["picard"]["MarkDuplicates"] + " -Xmx{}m".format(get_resource("mark_duplicates","mem"))
     wrapper:
-        "0.77.0/bio/picard/markduplicates"
+        "0.79.0/bio/picard/markduplicates"
 
 rule genome_faidx:
     input:
@@ -107,7 +107,7 @@ rule genome_faidx:
         mem = get_resource("genome_faidx","mem"),
         walltime = get_resource("genome_faidx","walltime")
     wrapper:
-        "0.77.0/bio/samtools/faidx"
+        "0.79.0/bio/samtools/faidx"
 
 rule obtain_recal_table:
     input:
@@ -128,7 +128,7 @@ rule obtain_recal_table:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
         walltime = get_resource("recalibrate_base_qualities","walltime")
     wrapper:
-        "0.77.0/bio/gatk/baserecalibrator"
+        "0.79.0/bio/gatk/baserecalibrator"
 
 rule recalibrate_base_qualities:
     input:
@@ -148,7 +148,7 @@ rule recalibrate_base_qualities:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
         walltime = get_resource("recalibrate_base_qualities","walltime")
     wrapper:
-        "0.77.0/bio/gatk/applybqsr"
+        "0.79.0/bio/gatk/applybqsr"
 
 rule samtools_index:
     input:
@@ -162,7 +162,7 @@ rule samtools_index:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.77.0/bio/samtools/index"
+        "0.79.0/bio/samtools/index"
 
 rule samtools_index_sorted:
     input:
@@ -176,7 +176,7 @@ rule samtools_index_sorted:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.77.0/bio/samtools/index"
+        "0.79.0/bio/samtools/index"
 
 rule index_known_variants:
     input:
