@@ -65,7 +65,22 @@ properties:
           GenotypeGVCFs:
             type: string
           VariantRecalibrator:
-            type: string
+            hapmap:
+              type: string
+            omni:
+              type: string
+            g1k:
+              type: string
+            dbsnp:
+              type: string
+            aux:
+              type: list
+            parameters:
+              type: object
+            annotation:
+              type: list
+            extra:
+              type: string
         required:
           - HaplotypeCaller
           - BaseRecalibrator
