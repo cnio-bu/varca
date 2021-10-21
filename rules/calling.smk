@@ -120,6 +120,8 @@ rule mutect:
     input:
         bam=lambda wc: get_merged_bam(wc.sample)[0],
         bai=lambda wc: get_merged_bam(wc.sample)[1],
+        cbam=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[0],
+        cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[1],
         ref=config["ref"]["genome"]
     output:
         f"{OUTDIR}/mutect/{{sample}}.vcf.gz"
