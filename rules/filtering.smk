@@ -47,7 +47,7 @@ rule hard_filter_calls:
 
 rule recalibrate_calls:
     input:
-        vcf=f"{OUTDIR}/genotyped/all.vcf.gz",
+        vcf=f"{OUTDIR}/filtered/all.{{vartype}}.vcf.gz",
         ref=config["ref"]["genome"],
         hapmap=config["params"]["gatk"]["VariantRecalibrator"]["hapmap"],
         omni=config["params"]["gatk"]["VariantRecalibrator"]["omni"],
@@ -55,15 +55,17 @@ rule recalibrate_calls:
         dbsnp=config["params"]["gatk"]["VariantRecalibrator"]["dbsnp"],
         aux=config["params"]["gatk"]["VariantRecalibrator"]["aux"]
     output:
-        vcf=f"{OUTDIR}/filtered/all.both.recalibrated.vcf.gz",
-        tranches=f"{OUTDIR}/filtered/all.tranches"
+        vcf=f"{OUTDIR}/filtered/all.{{vartype}}.recalibrated.vcf.gz",
+        tranches=f"{OUTDIR}/filtered/all.{{vartype}}.tranches"
     params:
-        mode="BOTH",
+        mode=lambda wc: "SNP"
+                if wc.vartype == "snvs"
+                else "INDEL",
         resources=config["params"]["gatk"]["VariantRecalibrator"]["parameters"],
         annotation=config["params"]["gatk"]["VariantRecalibrator"]["annotation"],
         extra=config["params"]["gatk"]["VariantRecalibrator"]["extra"]
     log:
-        f"{LOGDIR}/gatk/variantrecalibrator/log"
+        f"{LOGDIR}/gatk/variantrecalibrator/{{vartype}}.log"
     threads: get_resource("recalibrate_calls","threads")
     resources:
         mem = get_resource("recalibrate_calls","mem"),
@@ -74,9 +76,7 @@ rule recalibrate_calls:
 rule merge_calls:
     input:
         vcfs=expand(f"{OUTDIR}/filtered/all.{{vartype}}.{{filtertype}}.vcf.gz",
-                   vartype=["both"]
-                              if config["filtering"]["vqsr"]
-                              else ["snvs", "indels"],
+                   vartype=["snvs", "indels"],
                    filtertype="recalibrated"
                               if config["filtering"]["vqsr"]
                               else "hardfiltered")
