@@ -10,6 +10,8 @@ ref:
   name: GRCh38.86
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
   genome: /home/epineiro/REFERENCES/Homo_sapiens/HG38/hg38.fa
+  # Path to the directory with the reference indexes for the aligment. Indexes will be retrieve from this directory or created in it if they do not exist
+  genome_idx: /home/epineiro/REFERENCES/Homo_sapiens/HG38/indexes/bwa_mem2/
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
   known-variants: /home/epineiro/REFERENCES/Homo_sapiens/HG38/dbsnp_151.hg38.vcf
 

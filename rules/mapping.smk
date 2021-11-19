@@ -42,17 +42,19 @@ rule bwa_idx_genome:
     input:
         config["ref"]["genome"]
     output:
-        f"{config['ref']['genome']}.amb",
-        f"{config['ref']['genome']}.ann",
-        f"{config['ref']['genome']}.bwt",
-        f"{config['ref']['genome']}.pac",
-        f"{config['ref']['genome']}.sa"
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".amb",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".ann",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".pac",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".sa"
     threads: get_resource("bwa_idx_genome","threads")
     resources:
         mem = get_resource("bwa_idx_genome","mem"),
         walltime = get_resource("bwa_idx_genome","walltime")
     log:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.log"
+    params:
+        prefix=config['ref']['genome_idx']+os.path.basename(config['ref']['genome'])
     benchmark:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
     wrapper:
@@ -61,13 +63,13 @@ rule bwa_idx_genome:
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=f"{config['ref']['genome']}.bwt"
+        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt"
     output:
         temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
         f"{LOGDIR}/bwa_mem/{{sample}}-{{unit}}.log"
     params:
-        index=config["ref"]["genome"],
+        index=config["ref"]["genome_idx"],
         extra=get_read_group,
         sorting="samtools",
         sort_order="coordinate"
