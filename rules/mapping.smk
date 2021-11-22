@@ -42,11 +42,11 @@ rule bwa_idx_genome:
     input:
         config["ref"]["genome"]
     output:
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".0123",
         f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".amb",
         f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".ann",
-        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt",
-        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".pac",
-        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".sa"
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".pac"
     threads: get_resource("bwa_idx_genome","threads")
     resources:
         mem = get_resource("bwa_idx_genome","mem"),
@@ -58,27 +58,27 @@ rule bwa_idx_genome:
     benchmark:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
     wrapper:
-        "0.79.0/bio/bwa/index"
+        "0.79.0/bio/bwa-mem2/index"
 
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt"
+        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64"
     output:
         temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
         f"{LOGDIR}/bwa_mem/{{sample}}-{{unit}}.log"
     params:
-        index=config["ref"]["genome_idx"],
+        index=config["ref"]["genome_idx"]+os.path.basename(config['ref']['genome']),
         extra=get_read_group,
-        sorting="samtools",
+        sort="samtools",
         sort_order="coordinate"
     threads: get_resource("map_reads","threads")
     resources:
         mem = get_resource("map_reads","mem"),
         walltime = get_resource("map_reads","walltime")
     wrapper:
-        "0.79.0/bio/bwa/mem"
+        "0.79.0/bio/bwa-mem2/mem"
 
 rule mark_duplicates:
     input:
