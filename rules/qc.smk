@@ -27,7 +27,8 @@ rule samtools_stats:
 
 rule genome_dict:
     input:
-        genome=config["ref"]["genome"]
+        genome=config["ref"]["genome"],
+        fai=f"{config['ref']['genome']}.fai"
     output:
         dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
     threads: get_resource("genome_dict","threads")

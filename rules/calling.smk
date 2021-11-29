@@ -77,7 +77,7 @@ rule genotype_variants:
 
 rule merge_variants:
     input:
-        vcfs=expand(f"{OUTDIR}/genotyped/all.{{contig}}.vcf.gz", contig=contigs)
+        vcfs=lambda w: expand(f"{OUTDIR}/genotyped/all.{{contig}}.vcf.gz", contig=get_contigs())
     output:
         vcf=f"{OUTDIR}/genotyped/all.vcf.gz"
     log:

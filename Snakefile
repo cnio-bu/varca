@@ -20,14 +20,6 @@ units = pd.read_csv(config["units"],sep="\t", dtype=str).set_index(["sample", "u
 units.index = units.index.set_levels([i.astype(str) for i in units.index.levels])  # enforce str in index
 validate(units, schema="schemas/units.schema.yaml")
 
-# contigs in reference genome
-if os.stat(config["contigs"]).st_size != 0:
-    contigs = pd.read_csv(config["contigs"],sep="\t",header=None,usecols=[0],squeeze=True,dtype=str)
-else:
-    contigs = pd.read_csv(config["ref"]["genome"] + ".fai", sep="\t",
-                            header=None, usecols=[0], squeeze=True, dtype=str)
-    contigs = [re.sub("\*","___",x) for x in contigs]
-
 include: "rules/common.smk"
 
 ##### Target rules #####

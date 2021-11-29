@@ -97,7 +97,7 @@ rule mark_duplicates:
     wrapper:
         "0.79.0/bio/picard/markduplicates"
 
-rule genome_faidx:
+checkpoint genome_faidx:
     input:
         config["ref"]["genome"]
     output:
