@@ -93,17 +93,33 @@ rule merge_calls:
     wrapper:
         "0.79.0/bio/picard/mergevcfs"
 
+rule learn_read_orientation_model:
+    input:
+        f1r2=f"{OUTDIR}/mutect/{{sample}}.f1r2.tar.gz"
+    output:
+        rom=f"{OUTDIR}/mutect/{{sample}}_read_orientation_model.tar.gz"
+    conda: "../envs/gatk.yaml"
+    log:
+        f"{LOGDIR}/gatk/read_orientation_model.{{sample}}.log"
+    shell:"""
+        gatk LearnReadOrientationModel -I {input.f1r2} -O {output.rom}
+    """
+
+
 rule filter_mutect_calls:
     input:
         vcf=f"{OUTDIR}/mutect/{{sample}}.vcf.gz",
-        ref=config["ref"]["genome"]
+        ref=config["ref"]["genome"],
+        rom=f"{OUTDIR}/mutect/{{sample}}_read_orientation_model.tar.gz" if config["filtering"]["mutect"]["lrom"] else []
     output:
         vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable.vcf.gz"
+    params:
+        rom="--ob-priors " if config["filtering"]["mutect"]["lrom"] else ""
     conda: "../envs/gatk.yaml"
     log:
         f"{LOGDIR}/gatk/mutect_filter.{{sample}}.log"
     shell:"""
-        gatk FilterMutectCalls -R {input.ref} -V {input.vcf} -O {output}
+        gatk FilterMutectCalls -R {input.ref} -V {input.vcf} {params.rom} {input.rom} -O {output}
     """
 
 rule filter_mutect_2:
@@ -113,7 +129,7 @@ rule filter_mutect_2:
     output:
         vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable_filtered.vcf.gz"
     params:
-        filters={"DPfilter": config["filtering"]["depth"]}
+        filters={"DPfilter": config["filtering"]["mutect"]["depth"]}
     threads: get_resource("hard_filter_calls","threads")
     resources:
         mem_mb = get_resource("hard_filter_calls","mem"),

@@ -124,7 +124,8 @@ rule mutect:
         cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[1],
         ref=config["ref"]["genome"]
     output:
-        f"{OUTDIR}/mutect/{{sample}}.vcf.gz"
+        out=f"{OUTDIR}/mutect/{{sample}}.vcf.gz",
+        f1r2=f"{OUTDIR}/mutect/{{sample}}.f1r2.tar.gz"
     params:
         regions=lambda wc: get_mutect_params(wc.sample)[0],
         normal=lambda wc: get_mutect_params(wc.sample)[1]
@@ -136,5 +137,5 @@ rule mutect:
     log:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"
     shell:"""
-        gatk Mutect2 --callable-depth 1 --native-pair-hmm-threads 16 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output}
+        gatk Mutect2 --callable-depth 1 --native-pair-hmm-threads 16 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output.out} --f1r2-tar-gz {output.f1r2}
     """
