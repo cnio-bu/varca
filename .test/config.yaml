@@ -8,6 +8,7 @@ logdir: "log"
 ref:
   name: GRCh38.86
   genome: data/ref/genome.chr21.fa
+  genome_idx: data/ref/
   known-variants: data/ref/dbsnp.vcf.gz
 
 filtering:
