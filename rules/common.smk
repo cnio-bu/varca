@@ -2,7 +2,8 @@
 wildcard_constraints:
     vartype="snvs|indels",
     sample="|".join(samples.index),
-    unit="|".join(units["unit"])
+    unit="|".join(units["unit"]),
+    group="|".join([str(x) for x in samples["group"]])
 
 ##### Helper functions #####
 def get_contigs():
@@ -116,3 +117,8 @@ def get_vep_params():
 def get_contig_file_name(contigfn):
     contig = re.sub("___","*",contigfn)
     return contig
+
+def get_vcf_in_group(wc):
+    for row in samples.itertuples():
+        if str(getattr(row, 'group')) == str(wc.group):
+            return ["{OUTDIR}/called/{sample}.{contig}.g.vcf.gz".format(OUTDIR=OUTDIR, sample=getattr(row, 'sample'), contig=wc.contig)]

@@ -88,7 +88,7 @@ rule multiqc:
          expand(f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/picard/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()) if config["processing"].get("restrict-regions") else [],
-         f"{OUTDIR}/snpeff/all.csv"
+         expand(f"{OUTDIR}/snpeff/{{u.group}}.csv", u=samples.itertuples())
     output:
         report(f"{OUTDIR}/qc/multiqc.html", caption="../report/multiqc.rst", category="Quality control")
     log:

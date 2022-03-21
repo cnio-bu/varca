@@ -6,13 +6,13 @@ def get_vartype_arg(wildcards):
 rule select_calls:
     input:
         ref=config["ref"]["genome"],
-        vcf=f"{OUTDIR}/genotyped/all.vcf.gz"
+        vcf=f"{OUTDIR}/genotyped/{{group}}.vcf.gz"
     output:
-        vcf=temp(f"{OUTDIR}/filtered/all.{{vartype}}.vcf.gz")
+        vcf=temp(f"{OUTDIR}/filtered/{{group}}.{{vartype}}.vcf.gz")
     params:
         extra=get_vartype_arg
     log:
-        f"{LOGDIR}/gatk/selectvariants/{{vartype}}.log"
+        f"{LOGDIR}/gatk/selectvariants/{{group}}.{{vartype}}.log"
     threads: get_resource("select_calls","threads")
     resources:
         mem_mb = get_resource("select_calls","mem"),
@@ -30,9 +30,9 @@ def get_filter(wildcards):
 rule hard_filter_calls:
     input:
         ref=config["ref"]["genome"],
-        vcf=f"{OUTDIR}/filtered/all.{{vartype}}.vcf.gz"
+        vcf=f"{OUTDIR}/filtered/{{group}}.{{vartype}}.vcf.gz"
     output:
-        vcf=temp(f"{OUTDIR}/filtered/all.{{vartype}}.hardfiltered.vcf.gz")
+        vcf=temp(f"{OUTDIR}/filtered/{{group}}.{{vartype}}.hardfiltered.vcf.gz")
     params:
         filters=get_filter
     threads: get_resource("hard_filter_calls","threads")
@@ -40,14 +40,14 @@ rule hard_filter_calls:
         mem_mb = get_resource("hard_filter_calls","mem"),
         walltime = get_resource("hard_filter_calls","walltime")
     log:
-        f"{LOGDIR}/gatk/variantfiltration/{{vartype}}.log"
+        f"{LOGDIR}/gatk/variantfiltration/{{group}}.{{vartype}}.log"
     wrapper:
         "0.79.0/bio/gatk/variantfiltration"
 
 
 rule recalibrate_calls:
     input:
-        vcf=f"{OUTDIR}/filtered/all.{{vartype}}.vcf.gz",
+        vcf=f"{OUTDIR}/filtered/{{group}}.{{vartype}}.vcf.gz",
         ref=config["ref"]["genome"],
         hapmap=config["params"]["gatk"]["VariantRecalibrator"]["hapmap"],
         omni=config["params"]["gatk"]["VariantRecalibrator"]["omni"],
@@ -55,8 +55,8 @@ rule recalibrate_calls:
         dbsnp=config["params"]["gatk"]["VariantRecalibrator"]["dbsnp"],
         aux=config["params"]["gatk"]["VariantRecalibrator"]["aux"]
     output:
-        vcf=f"{OUTDIR}/filtered/all.{{vartype}}.recalibrated.vcf.gz",
-        tranches=f"{OUTDIR}/filtered/all.{{vartype}}.tranches"
+        vcf=f"{OUTDIR}/filtered/{{group}}.{{vartype}}.recalibrated.vcf.gz",
+        tranches=f"{OUTDIR}/filtered/{{group}}.{{vartype}}.tranches"
     params:
         mode=lambda wc: "SNP"
                 if wc.vartype == "snvs"
@@ -65,7 +65,7 @@ rule recalibrate_calls:
         annotation=config["params"]["gatk"]["VariantRecalibrator"]["annotation"],
         extra=config["params"]["gatk"]["VariantRecalibrator"]["extra"]
     log:
-        f"{LOGDIR}/gatk/variantrecalibrator/{{vartype}}.log"
+        f"{LOGDIR}/gatk/variantrecalibrator/{{group}}.{{vartype}}.log"
     threads: get_resource("recalibrate_calls","threads")
     resources:
         mem = get_resource("recalibrate_calls","mem"),
@@ -75,15 +75,15 @@ rule recalibrate_calls:
 
 rule merge_calls:
     input:
-        vcfs=expand(f"{OUTDIR}/filtered/all.{{vartype}}.{{filtertype}}.vcf.gz",
+        vcfs=lambda wc: expand(f"{OUTDIR}/filtered/{wc.group}.{{vartype}}.{{filtertype}}.vcf.gz",
                    vartype=["snvs", "indels"],
                    filtertype="recalibrated"
                               if config["filtering"]["vqsr"]
                               else "hardfiltered")
     output:
-        vcf=f"{OUTDIR}/filtered/all.vcf.gz"
+        vcf=f"{OUTDIR}/filtered/{{group}}.vcf.gz"
     log:
-        f"{LOGDIR}/picard/merge-filtered.log"
+        f"{LOGDIR}/picard/{{group}}.merge-filtered.log"
     threads: get_resource("merge_calls","threads")
     resources:
         mem_mb = get_resource("merge_calls","mem"),

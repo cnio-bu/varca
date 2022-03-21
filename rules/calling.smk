@@ -44,11 +44,11 @@ rule call_variants:
 rule combine_calls:
     input:
         ref=config["ref"]["genome"],
-        gvcfs=expand("{OUTDIR}/called/{sample}.{{contig}}.g.vcf.gz", OUTDIR=OUTDIR, sample=samples.index)
+        gvcfs= lambda wc: get_vcf_in_group(wc)
     output:
-        gvcf=f"{OUTDIR}/called/all.{{contig}}.g.vcf.gz"
+        gvcf=f"{OUTDIR}/called/{{group}}.{{contig}}.g.vcf.gz"
     log:
-        f"{LOGDIR}/gatk/combinegvcfs.{{contig}}.log"
+        f"{LOGDIR}/gatk/combinegvcfs.{{group}}.{{contig}}.log"
     threads: get_resource("combine_calls","threads")
     resources:
         mem_mb = get_resource("combine_calls","mem"),
@@ -60,13 +60,13 @@ rule combine_calls:
 rule genotype_variants:
     input:
         ref=config["ref"]["genome"],
-        gvcf=f"{OUTDIR}/called/all.{{contig}}.g.vcf.gz"
+        gvcf=f"{OUTDIR}/called/{{group}}.{{contig}}.g.vcf.gz"
     output:
-        vcf=temp(f"{OUTDIR}/genotyped/all.{{contig}}.vcf.gz")
+        vcf=temp(f"{OUTDIR}/genotyped/{{group}}.{{contig}}.vcf.gz")
     params:
         extra=config["params"]["gatk"]["GenotypeGVCFs"]
     log:
-        f"{LOGDIR}/gatk/genotypegvcfs.{{contig}}.log"
+        f"{LOGDIR}/gatk/genotypegvcfs.{{group}}.{{contig}}.log"
     threads: get_resource("genotype_variants","threads")
     resources:
         mem_mb = get_resource("genotype_variants","mem"),
@@ -77,11 +77,11 @@ rule genotype_variants:
 
 rule merge_variants:
     input:
-        vcfs=lambda w: expand(f"{OUTDIR}/genotyped/all.{{contig}}.vcf.gz", contig=get_contigs())
+        vcfs=lambda wc: expand(f"{OUTDIR}/genotyped/{wc.group}.{{contig}}.vcf.gz", contig=get_contigs())
     output:
-        vcf=f"{OUTDIR}/genotyped/all.vcf.gz"
+        vcf=f"{OUTDIR}/genotyped/{{group}}.vcf.gz"
     log:
-        f"{LOGDIR}/picard/merge-genotyped.log"
+        f"{LOGDIR}/picard/{{group}}.merge-genotyped.log"
     threads: get_resource("merge_variants","threads")
     resources:
         mem_mb = get_resource("merge_variants","mem"),

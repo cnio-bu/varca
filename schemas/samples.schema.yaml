@@ -2,6 +2,11 @@ $schema: "http://json-schema.org/draft-04/schema#"
 
 description: an entry in the sample sheet
 properties:
+  group:
+    type:
+      - string
+      - number
+    description: sample group
   sample:
     type: string
     description: sample name/identifier
@@ -9,5 +14,6 @@ properties:
     type: string
     description: sample type, target or control
 required:
+  - group
   - sample
   - control

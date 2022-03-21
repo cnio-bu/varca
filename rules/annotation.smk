@@ -13,13 +13,13 @@ rule snpeff_download:
 
 rule snpeff:
     input:
-        calls = f"{OUTDIR}/filtered/all.vcf.gz",
+        calls = f"{OUTDIR}/filtered/{{group}}.vcf.gz",
         db = f"resources/snpeff/{config['ref']['name']}"
     output:
-        calls=report(f"{OUTDIR}/annotated/all.vcf.gz", caption="../report/vcf.rst", category="Calls"),
-        csvstats=f"{OUTDIR}/snpeff/all.csv"
+        calls=report(f"{OUTDIR}/annotated/{{group}}.snpeff.vcf.gz", caption="../report/vcf.rst", category="Calls"),
+        csvstats=f"{OUTDIR}/snpeff/{{group}}.csv"
     log:
-        f"{LOGDIR}/snpeff/snpeff.log"
+        f"{LOGDIR}/snpeff/{{group}}.snpeff.log"
     threads: get_resource("snpeff","threads")
     resources:
         mem_mb = get_resource("snpeff","mem"),
@@ -31,9 +31,9 @@ rule snpeff:
 
 rule vep_gatk:
     input:
-        f"{OUTDIR}/filtered/all.vcf.gz"
+        f"{OUTDIR}/filtered/{{group}}.vcf.gz"
     output:
-        f"{OUTDIR}/annotated/all.vep.vcf.gz"
+        f"{OUTDIR}/annotated/{{group}}.vep.vcf.gz"
     params:
         get_vep_params()
     conda:"../envs/vep.yaml"
@@ -42,7 +42,7 @@ rule vep_gatk:
         mem = get_resource("vep","mem"),
         walltime = get_resource("vep","walltime")
     log:
-        f"{LOGDIR}/vep/gatk_vep.log"
+        f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
     shell: """
         vep -i {input} -o {output} --vcf --compress_output gzip --force_overwrite {params} --fork {threads}
     """
