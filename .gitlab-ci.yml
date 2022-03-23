@@ -22,5 +22,6 @@ tests:
   stage: test
   script:
     - source activate snakemake
+    - df -h
     - snakemake --all-temp --cores 4 --use-conda --directory .test
     - snakemake --all-temp --cores 1 --directory .test --report report.html
