@@ -29,6 +29,7 @@ tests:
     - snakemake --conda-cleanup-pkgs cache --all-temp --cores 1 --use-conda --directory .test
     - snakemake --all-temp --cores 1 --directory .test --report report.html
   artifacts:
+    when: on_failure
     paths:
       - .test/log/
     expire_in: 1 week
