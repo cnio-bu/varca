@@ -23,5 +23,9 @@ tests:
   script:
     - source activate snakemake
     - df -h
-    - snakemake --conda-cleanup-pkgs cache --all-temp --cores 4 --use-conda --directory .test
+    - snakemake --conda-cleanup-pkgs cache --all-temp --cores 1 --use-conda --directory .test
     - snakemake --all-temp --cores 1 --directory .test --report report.html
+  artifacts:
+    paths:
+      - .test/log/
+    expire_in: 1 week
