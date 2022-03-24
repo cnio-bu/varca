@@ -18,7 +18,7 @@ before_script:
   - samtools faidx .test/data/ref/genome.chr21.fa
   - gatk CreateSequenceDictionary -R .test/data/ref/genome.chr21.fa
   - conda deactivate
-  - mamba remove -y --all prep
+  - mamba remove -y --all -n prep
   - mamba clean -y --all
 
 tests:
