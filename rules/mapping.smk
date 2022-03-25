@@ -143,6 +143,7 @@ rule recalibrate_base_qualities:
         bai=get_recal_input(bai=True),
         ref=config["ref"]["genome"],
         ref_idx=f"{config['ref']['genome']}.fai",
+        ref_dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict",
         recal_table=f"{OUTDIR}/recal/{{sample}}-{{unit}}.grp"
     output:
         bam=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
