@@ -62,8 +62,12 @@ rule bwa_idx_genome:
 
 rule map_reads:
     input:
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".0123",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".amb",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".ann",
+        f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".pac",
+        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64",
         reads=get_trimmed_reads,
-        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64"
     output:
         temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
