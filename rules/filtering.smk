@@ -68,7 +68,7 @@ rule recalibrate_calls:
         f"{LOGDIR}/gatk/variantrecalibrator/{{group}}.{{vartype}}.log"
     threads: get_resource("recalibrate_calls","threads")
     resources:
-        mem = get_resource("recalibrate_calls","mem"),
+        mem_mb = get_resource("recalibrate_calls","mem"),
         walltime = get_resource("recalibrate_calls","walltime")
     wrapper:
         "0.79.0/bio/gatk/variantrecalibrator"

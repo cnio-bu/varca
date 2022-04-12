@@ -7,7 +7,7 @@ rule vcf_to_tsv:
         "../envs/rbt.yaml"
     threads: get_resource("vcf_to_tsv","threads")
     resources:
-        mem = get_resource("vcf_to_tsv","mem"),
+        mem_mb = get_resource("vcf_to_tsv","mem"),
         walltime = get_resource("vcf_to_tsv","walltime")
     shell:
         "bcftools view --apply-filters PASS --output-type u {input} | "
@@ -25,7 +25,7 @@ rule plot_stats:
         "../envs/stats.yaml"
     threads: get_resource("plot_stats","threads")
     resources:
-        mem = get_resource("plots_stats","mem"),
+        mem_mb = get_resource("plots_stats","mem"),
         walltime = get_resource("plots_stats","walltime")
     script:
         "../scripts/plot-depths.py"

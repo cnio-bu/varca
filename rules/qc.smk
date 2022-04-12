@@ -6,7 +6,7 @@ rule fastqc:
         zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_fastqc.zip"
     threads: get_resource("fastqc","threads")
     resources:
-        mem = get_resource("fastqc","mem"),
+        mem_mb = get_resource("fastqc","mem"),
         walltime = get_resource("fastqc","walltime")
     wrapper:
         "0.79.0/bio/fastqc"
@@ -20,7 +20,7 @@ rule samtools_stats:
         f"{LOGDIR}/samtools-stats/{{sample}}-{{unit}}.log"
     threads: get_resource("samtools_stats","threads")
     resources:
-        mem = get_resource("samtools_stats","mem"),
+        mem_mb = get_resource("samtools_stats","mem"),
         walltime = get_resource("samtools_stats","walltime")
     wrapper:
         "0.79.0/bio/samtools/stats"
@@ -33,7 +33,7 @@ rule genome_dict:
         dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
     threads: get_resource("genome_dict","threads")
     resources:
-        mem = get_resource("genome_dict","mem"),
+        mem_mb = get_resource("genome_dict","mem"),
         walltime = get_resource("genome_dict","walltime")
     conda:
         "../envs/gatk.yaml"
@@ -55,7 +55,7 @@ if "restrict-regions" in config["processing"]:
         conda:
             "../envs/picard.yaml"
         resources:
-            mem = get_resource("bed_to_interval","mem"),
+            mem_mb = get_resource("bed_to_interval","mem"),
             walltime = get_resource("bed_to_interval","walltime")
         params:
             extra = "-Xmx{}m".format(get_resource("bed_to_interval","mem"))
@@ -95,7 +95,7 @@ rule multiqc:
         f"{LOGDIR}/multiqc.log"
     threads: get_resource("multiqc","threads")
     resources:
-        mem = get_resource("multiqc","mem"),
+        mem_mb = get_resource("multiqc","mem"),
         walltime = get_resource("multiqc","walltime")
     wrapper:
         "0.79.0/bio/multiqc"

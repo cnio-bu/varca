@@ -2,7 +2,7 @@ channels:
   - bioconda
   - conda-forge
 dependencies:
-  - python =3.6
-  - matplotlib =2.2
-  - pandas =0.23
-  - seaborn =0.8
+  - python =3.10.4
+  - matplotlib =3.5.1
+  - pandas =1.4.1
+  - seaborn =0.11.2

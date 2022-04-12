@@ -39,7 +39,7 @@ rule vep_gatk:
     conda:"../envs/vep.yaml"
     threads: get_resource("vep","threads")
     resources:
-        mem = get_resource("vep","mem"),
+        mem_mb = get_resource("vep","mem"),
         walltime = get_resource("vep","walltime")
     log:
         f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
@@ -57,10 +57,10 @@ rule vep_mutect:
     conda:"../envs/vep.yaml"
     threads: get_resource("vep","threads")
     resources:
-        mem = get_resource("vep","mem"),
+        mem_mb = get_resource("vep","mem"),
         walltime = get_resource("vep","walltime")
     log:
         f"{LOGDIR}/vep/mutect_{{sample}}_vep.log"
     shell: """
-        vep -i {input} -o {output} --vcf --compress_output gzip --force_overwrite {params} --fork {threads}
+        vep -i {input} -o {output} --format 'vcf' --vcf --compress_output gzip --force_overwrite {params} --fork {threads}
     """

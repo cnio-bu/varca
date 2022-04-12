@@ -9,9 +9,9 @@ wildcard_constraints:
 def get_contigs():
     with checkpoints.genome_faidx.get().output[0].open() as fai:
         if os.stat(config["contigs"]).st_size != 0:
-            contigs = pd.read_csv(config["contigs"],sep="\t",header=None,usecols=[0],squeeze=True,dtype=str)
+            contigs = pd.read_csv(config["contigs"],sep="\t",header=None,usecols=[0],dtype=str).squeeze("columns")
         else:
-            contigs = pd.read_table(fai, header=None, usecols=[0], squeeze=True, dtype=str)
+            contigs = pd.read_table(fai, header=None, usecols=[0], dtype=str).squeeze("columns")
         return [re.sub("\*","___",x) for x in contigs]
 
 def get_resource(rule,resource):

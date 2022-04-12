@@ -49,7 +49,7 @@ rule bwa_idx_genome:
         f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".pac"
     threads: get_resource("bwa_idx_genome","threads")
     resources:
-        mem = get_resource("bwa_idx_genome","mem"),
+        mem_mb = get_resource("bwa_idx_genome","mem"),
         walltime = get_resource("bwa_idx_genome","walltime")
     log:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.log"
@@ -75,7 +75,7 @@ rule map_reads:
         sort_order="coordinate"
     threads: get_resource("map_reads","threads")
     resources:
-        mem = get_resource("map_reads","mem"),
+        mem_mb = get_resource("map_reads","mem"),
         walltime = get_resource("map_reads","walltime")
     wrapper:
         "0.79.0/bio/bwa-mem2/mem"
@@ -106,7 +106,7 @@ checkpoint genome_faidx:
         f"{LOGDIR}/genome_faidx/genome_faidx.log"
     threads: get_resource("genome_faidx","threads")
     resources:
-        mem = get_resource("genome_faidx","mem"),
+        mem_mb = get_resource("genome_faidx","mem"),
         walltime = get_resource("genome_faidx","walltime")
     wrapper:
         "0.79.0/bio/samtools/faidx"
@@ -160,7 +160,7 @@ rule samtools_index:
         f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bai"
     threads: get_resource("samtools_index","threads")
     resources:
-        mem = get_resource("samtools_index","mem"),
+        mem_mb = get_resource("samtools_index","mem"),
         walltime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
@@ -171,10 +171,10 @@ rule samtools_index_sorted:
     input:
         f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam"
     output:
-        f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam.bai"
+        f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bai"
     threads: get_resource("samtools_index","threads")
     resources:
-        mem = get_resource("samtools_index","mem"),
+        mem_mb = get_resource("samtools_index","mem"),
         walltime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
@@ -187,7 +187,7 @@ rule index_known_variants:
     output:
         index=f"{config['ref']['known-variants']}.tbi"
     resources:
-        mem = get_resource("index_known_variants","mem"),
+        mem_mb = get_resource("index_known_variants","mem"),
         walltime = get_resource("index_known_variants","walltime")
     conda:
         "../envs/gatk.yaml"
