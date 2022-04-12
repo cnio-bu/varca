@@ -97,7 +97,7 @@ rule merge_bams:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     threads: get_resource("merge_bams","threads")
     resources:
-        mem = get_resource("merge_bams","mem"),
+        mem_mb = get_resource("merge_bams","mem"),
         walltime = get_resource("merge_bams","walltime")
     wrapper:
         "0.79.0/bio/samtools/merge"
@@ -109,7 +109,7 @@ rule samtools_index_merged:
         f"{OUTDIR}/merged_bams/{{sample}}.bai"
     threads: get_resource("samtools_index","threads")
     resources:
-        mem = get_resource("samtools_index","mem"),
+        mem_mb = get_resource("samtools_index","mem"),
         walltime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
@@ -131,7 +131,7 @@ rule mutect:
         normal=lambda wc: get_mutect_params(wc.sample)[1]
     threads: get_resource("mutect","threads")
     resources:
-        mem = get_resource("mutect","mem"),
+        mem_mb = get_resource("mutect","mem"),
         walltime = get_resource("mutect","walltime")
     conda: "../envs/gatk.yaml"
     log:
