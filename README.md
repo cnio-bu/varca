@@ -36,7 +36,11 @@ It contains the contigs of the reference genome to include in the analysis (one 
 
 **samples.tsv**
 
-It lists all samples to be included in the run, the use of MuTect2 and its execution mode. HaplotypeCaller will be executed for each sample in the `sample` column. To activate the execution of MuTect2 and set its execution mode, the `control` column is used. If control contains:
+It lists all samples to be included in the run, the group to which the samples belong, the use of MuTect2 and its execution mode.
+
+HaplotypeCaller will be executed for each sample in the `sample` column. The results of the samples from each `group` will be joined, and consequently, at the end, there will be one HaplotypeCaller result for each `group` defined in this file.
+
+To activate the execution of MuTect2 and set its execution mode, the `control` column is used. If control contains:
 
 - `-` MuTect2 is not executed for that sample.
 
@@ -47,22 +51,22 @@ Examples:
 
 - No MuTect2 execution:
 
-| sample | control |
-| ------ | ------ |
-| A | - |
+|group | sample | control |
+| ------ | ------ | ------ |
+| 1 | A | - |
 
 - MuTect2 execution in tumor-only mode:
 
-| sample | control |
-| ------ | ------ |
-| A | A |
+|group | sample | control |
+| ------ | ------ | ------ |
+| 1 | A | A |
 
 - MuTect2 execution in tumor-normal mode:
 
-| sample | control |
-| ------ | ------ |
-| A | B |
-| B | - |
+| group | sample | control |
+| ------ | ------ | ------ |
+| 1 | A | B |
+| 1 | B | - |
 
 being A:tumor, B:normal
 
