@@ -40,7 +40,7 @@ It lists all samples to be included in the run, the group to which the samples b
 
 HaplotypeCaller will be executed for each sample in the `sample` column. The results of the samples from each `group` will be joined, and consequently, at the end, there will be one HaplotypeCaller result for each `group` defined in this file.
 
-To activate the execution of MuTect2 and set its execution mode, the `control` column is used. If control contains:
+Mutect will always be run independently for each tumor sample or tumor/control pair, and its results will remain separated. To activate the execution of MuTect2 and set its execution mode, the `control` column is used. If control contains:
 
 - `-` MuTect2 is not executed for that sample.
 
@@ -69,8 +69,6 @@ Examples:
 | 1 | B | - |
 
 being A:tumor, B:normal
-
-MuTect2 will always be run independently for each tumor sample or tumor/control pair.
 
 **units.tsv**
 
