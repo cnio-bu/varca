@@ -70,6 +70,8 @@ Examples:
 
 being A:tumor, B:normal
 
+MuTect2 will always be run independently for each tumor sample or tumor/control pair.
+
 **units.tsv**
 
 It contains the specifications of the samples (sequencing units, sequencing platform and fastq files) listed in `samples.tsv`, as described in the original workflow ([Step3: configure workflow](https://snakemake.github.io/snakemake-workflow-catalog/?usage=snakemake-workflows%2Fdna-seq-gatk-variant-calling)).
