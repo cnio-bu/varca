@@ -38,7 +38,7 @@ It contains the contigs of the reference genome to include in the analysis (one 
 
 It lists all samples to be included in the run, the group to which the samples belong, the use of MuTect2 and its execution mode.
 
-HaplotypeCaller will be executed for each sample in the `sample` column. The results of the samples from each `group` will be joined, and consequently, at the end, there will be one HaplotypeCaller result for each `group` defined in this file.
+HaplotypeCaller will be executed for each sample in the `sample` column. The results of the samples from each `group` will be merged, and consequently, at the end, there will be one HaplotypeCaller result for each `group` defined in this file.
 
 Mutect will always be run independently for each tumor sample or tumor/control pair, and its results will remain separated. To activate the execution of MuTect2 and set its execution mode, the `control` column is used. If control contains:
 
