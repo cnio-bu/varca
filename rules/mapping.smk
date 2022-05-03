@@ -199,5 +199,5 @@ rule index_known_variants:
     log:
         f"{LOGDIR}/gatk/index_known_variants.log"
     shell:"""
-        gatk IndexFeatureFile -F {input.file} -O {output.index}
+        gatk IndexFeatureFile -I {input.file} -O {output.index}
     """
