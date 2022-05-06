@@ -121,4 +121,4 @@ def get_contig_file_name(contigfn):
 def get_vcf_in_group(wc):
     for row in samples.itertuples():
         if str(getattr(row, 'group')) == str(wc.group):
-            return ["{OUTDIR}/called/{sample}.{contig}.g.vcf.gz".format(OUTDIR=OUTDIR, sample=getattr(row, 'sample'), contig=wc.contig)]
+            return ["{OUTDIR}/called/{sample}.{contig}.g.vcf.gz".format(OUTDIR=OUTDIR, sample=getattr(row, 'sample'), contig=wc.contig) for row in samples.itertuples()]
