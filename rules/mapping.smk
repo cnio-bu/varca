@@ -63,7 +63,8 @@ rule bwa_idx_genome:
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64"
+        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64",
+        alt=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".alt" if config['ref']['genome_alt'] != None else []
     output:
         temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
@@ -196,3 +197,11 @@ rule index_known_variants:
     shell:"""
         gatk IndexFeatureFile -I {input.file} -O {output.index}
     """
+
+rule use_alt_contigs_file:
+    input:
+        file=f"{config['ref']['genome_alt']}"
+    output:
+        file=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".alt"
+    shell:
+        "cp {input.file} {output.file}"
