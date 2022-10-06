@@ -119,8 +119,8 @@ rule obtain_recal_table:
         ref=config["ref"]["genome"],
         ref_idx=f"{config['ref']['genome']}.fai",
         ref_dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict",
-        known=config["ref"]["known-variants"],
-        known_idx=f"{config['ref']['known-variants']}.tbi"
+        known=config["ref"]["known_variants"],
+        known_idx=f"{config['ref']['known_variants']}.tbi"
     output:
         recal_table=f"{OUTDIR}/recal/{{sample}}-{{unit}}.grp"
     params:
@@ -184,9 +184,9 @@ rule samtools_index_sorted:
 
 rule index_known_variants:
     input:
-        file=config['ref']['known-variants']
+        file=config['ref']['known_variants']
     output:
-        index=f"{config['ref']['known-variants']}.tbi"
+        index=f"{config['ref']['known_variants']}.tbi"
     resources:
         mem_mb = get_resource("index_known_variants","mem"),
         walltime = get_resource("index_known_variants","walltime")
