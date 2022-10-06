@@ -64,10 +64,10 @@ def get_merged_bam(sample):
     else:
         return bams[0],bams[0].replace(".bam",".bai")
 
-def get_regions_param(regions=config["processing"].get("restrict-regions"), default=""):
+def get_regions_param(regions=config["processing"].get("restrict_regions"), default=""):
     if regions:
         params = "--intervals '{}' ".format(regions)
-        padding = config["processing"].get("region-padding")
+        padding = config["processing"].get("region_padding")
         if padding:
             params += "--interval-padding {}".format(padding)
         return params
@@ -82,11 +82,11 @@ def get_call_variants_params(wildcards, input):
 def get_recal_input(bai=False):
     # case 1: no duplicate removal
     f = f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam"
-    if config["processing"]["remove-duplicates"]:
+    if config["processing"]["remove_duplicates"]:
         # case 2: remove duplicates
         f = f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam"
     if bai:
-        if config["processing"].get("restrict-regions"):
+        if config["processing"].get("restrict_regions"):
             # case 3: need an index because random access is required
             f = f.replace(".bam",".bai")
             return f
@@ -97,8 +97,8 @@ def get_recal_input(bai=False):
         return f
 
 def get_mutect_params(sample):
-    if config["processing"].get("restrict-regions"):
-        regions_call="-L "+config["processing"].get("restrict-regions")
+    if config["processing"].get("restrict_regions"):
+        regions_call="-L "+config["processing"].get("restrict_regions")
     else:
         regions_call=""
     if samples.loc[(sample),"control"] != sample:

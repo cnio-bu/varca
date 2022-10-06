@@ -1,7 +1,7 @@
-if "restrict-regions" in config["processing"]:
+if "restrict_regions" in config["processing"]:
     rule sort_bed:
         input:
-            config["processing"]["restrict-regions"]
+            config["processing"]["restrict_regions"]
         output:
             temp("{OUTDIR}/called/regions.sorted.bed")
         conda:
@@ -25,8 +25,8 @@ rule call_variants:
     input:
         bam=lambda wc: get_sample_bams(wc.sample),
         ref=config["ref"]["genome"],
-        known=config["ref"]["known-variants"],
-        regions=f"{OUTDIR}/called/{{contig}}.regions.bed" if config["processing"].get("restrict-regions") else []
+        known=config["ref"]["known_variants"],
+        regions=f"{OUTDIR}/called/{{contig}}.regions.bed" if config["processing"].get("restrict_regions") else []
     output:
         gvcf=f"{OUTDIR}/called/{{sample}}.{{contig}}.g.vcf.gz"
     log:

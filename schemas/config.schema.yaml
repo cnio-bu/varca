@@ -15,11 +15,11 @@ properties:
     properties:
       genome:
         type: string
-      known-variants:
+      known_variants:
         type: string
     required:
       - genome
-      - known-variants
+      - known_variants
 
   filtering:
     type: object
@@ -43,14 +43,14 @@ properties:
   processing:
     type: object
     properties:
-      remove-duplicates:
+      remove_duplicates:
         type: boolean
-      restrict-regions:
+      restrict_regions:
         type: string
-      region-padding:
+      region_padding:
         type: integer
     required:
-      - remove-duplicates
+      - remove_duplicates
 
   params:
     type: object

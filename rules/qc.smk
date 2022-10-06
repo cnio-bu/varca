@@ -44,10 +44,10 @@ rule genome_dict:
         gatk CreateSequenceDictionary -R {input.genome} > {log.stdout} 2> {log.stderr}
     """
 
-if "restrict-regions" in config["processing"]:
+if "restrict_regions" in config["processing"]:
     rule bed_to_interval:
         input:
-            file=config["processing"]["restrict-regions"],
+            file=config["processing"]["restrict_regions"],
             SD=config["ref"]["genome"],
             dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
         output:
@@ -87,7 +87,7 @@ rule multiqc:
          [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_fastqc.zip", r=["r1","r2"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) != "nan")],
          expand(f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt", u=units.itertuples()),
-         expand(f"{OUTDIR}/qc/picard/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()) if config["processing"].get("restrict-regions") else [],
+         expand(f"{OUTDIR}/qc/picard/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()) if config["processing"].get("restrict_regions") else [],
          expand(f"{OUTDIR}/snpeff/{{u.group}}.csv", u=samples.itertuples())
     output:
         report(f"{OUTDIR}/qc/multiqc.html", caption="../report/multiqc.rst", category="Quality control")
