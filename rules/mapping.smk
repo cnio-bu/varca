@@ -74,6 +74,7 @@ rule map_reads:
         extra=get_read_group,
         sort="samtools",
         sort_order="coordinate"
+    shadow: "shallow"
     threads: get_resource("map_reads","threads")
     resources:
         mem_mb = get_resource("map_reads","mem"),
