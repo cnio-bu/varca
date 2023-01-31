@@ -111,7 +111,7 @@ checkpoint genome_faidx:
         mem_mb = get_resource("genome_faidx","mem"),
         walltime = get_resource("genome_faidx","walltime")
     wrapper:
-        "0.79.0/bio/samtools/faidx"
+        "v1.21.6/bio/samtools/faidx"
 
 rule obtain_recal_table:
     input:
@@ -167,7 +167,7 @@ rule samtools_index:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v1.21.6/bio/samtools/index"
 
 rule samtools_index_sorted:
     input:
@@ -181,7 +181,7 @@ rule samtools_index_sorted:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v1.21.6/bio/samtools/index"
 
 rule index_known_variants:
     input:
