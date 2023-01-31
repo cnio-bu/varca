@@ -70,7 +70,6 @@ rule map_reads:
     log:
         f"{LOGDIR}/bwa_mem/{{sample}}-{{unit}}.log"
     params:
-        index=config["ref"]["genome_idx"]+os.path.basename(config['ref']['genome']),
         extra=get_read_group,
         sort="samtools",
         sort_order="coordinate"
