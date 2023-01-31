@@ -1,0 +1,3 @@
+sample	unit	platform	fq1	fq2
+Tumor	1	ILLUMINA	/home/epineiro/Programs/varca/OVCA_case/Raw_data/WEx_Tumour_R1.fastq	/home/epineiro/Programs/varca/OVCA_case/Raw_data/WEx_Tumour_R2.fastq
+Normal	1	ILLUMINA	/home/epineiro/Programs/varca/OVCA_case/Raw_data/WEx_Normal_R1.fastq	/home/epineiro/Programs/varca/OVCA_case/Raw_data/WEx_Normal_R2.fastq
