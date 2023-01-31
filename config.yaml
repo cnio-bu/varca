@@ -15,7 +15,7 @@ ref:
   # If the reference genome contains alternative contigs, indicate the path to the .alt index file to account for their presence in the alignment. Otherwise, leave the field empty. The specified file will be renamed to the indicated reference genome and included in the index directory. Please, visit https://github.com/lh3/bwa/blob/master/README-alt.md and https://gatk.broadinstitute.org/hc/en-us/articles/360037498992--How-to-Map-reads-to-a-reference-with-alternate-contigs-like-GRCH38.
   genome_alt: 
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known_variants: OVCA_case/Human_genome/hg19_chr17.fa
+  known_variants: OVCA_case/Bundle_GATK/dbsnp_138.hg19_chr17.fa
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
