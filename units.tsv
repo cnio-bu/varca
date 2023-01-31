@@ -1,3 +1,3 @@
 sample	unit	platform	fq1	fq2
-Tumor	1	ILLUMINA	OVCA_case/Raw_data/WEx_Tumour_R1.fastq	OVCA_case/Raw_data/WEx_Tumour_R2.fastq
-Normal	1	ILLUMINA	OVCA_case/Raw_data/WEx_Normal_R1.fastq	OVCA_case/Raw_data/WEx_Normal_R2.fastq
+Tumor	1	ILLUMINA	OVCA_case/Raw_data/WEx_Tumour_R1.fastq.gz	OVCA_case/Raw_data/WEx_Tumour_R2.fastq.gz
+Normal	1	ILLUMINA	OVCA_case/Raw_data/WEx_Normal_R1.fastq.gz	OVCA_case/Raw_data/WEx_Normal_R2.fastq.gz
