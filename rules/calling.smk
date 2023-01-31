@@ -100,7 +100,7 @@ rule merge_bams:
         mem_mb = get_resource("merge_bams","mem"),
         walltime = get_resource("merge_bams","walltime")
     wrapper:
-        "0.79.0/bio/samtools/merge"
+        "v1.21.6/bio/samtools/merge"
 
 rule samtools_index_merged:
     input:
@@ -114,7 +114,7 @@ rule samtools_index_merged:
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v1.21.6/bio/samtools/index"
 
 rule mutect:
     input:
