@@ -9,13 +9,13 @@ ref:
   # Genome database of snpeff to be used in the annotation with this resource. Available databases can be checked with java -jar snpEff.jar databases
   name: GRCh37.75
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
-  genome: /home/epineiro/Programs/varca/OVCA_case/Human_genome/hg19_chr17.fa
+  genome: OVCA_case/Human_genome/hg19_chr17.fa
   # Path to the directory with the reference indexes for the aligment. Indexes will be retrieve from this directory or created in it if they do not exist
-  genome_idx: /home/epineiro/Programs/varca/OVCA_case/Human_genome/
+  genome_idx: OVCA_case/Human_genome/
   # If the reference genome contains alternative contigs, indicate the path to the .alt index file to account for their presence in the alignment. Otherwise, leave the field empty. The specified file will be renamed to the indicated reference genome and included in the index directory. Please, visit https://github.com/lh3/bwa/blob/master/README-alt.md and https://gatk.broadinstitute.org/hc/en-us/articles/360037498992--How-to-Map-reads-to-a-reference-with-alternate-contigs-like-GRCH38.
   genome_alt: 
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known_variants: /home/epineiro/Programs/varca/OVCA_case/Human_genome/hg19_chr17.fa
+  known_variants: OVCA_case/Human_genome/hg19_chr17.fa
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
@@ -38,7 +38,7 @@ processing:
   remove_duplicates: true
   # Uncomment and point to a bed file with, e.g., captured regions if necessary,
   # see https://gatkforums.broadinstitute.org/gatk/discussion/4133/when-should-i-use-l-to-pass-in-a-list-of-intervals.
-  restrict_regions: /home/epineiro/Programs/varca/OVCA_case/Intervals/SureSelect_V5_human_all_Exons_chr17.bed
+  restrict_regions: OVCA_case/Intervals/SureSelect_V5_human_all_Exons_chr17.bed
   # If regions are restricted, uncomment this to enlarge them by the given value in order to include
   # flanking areas.
   region_padding: 100
