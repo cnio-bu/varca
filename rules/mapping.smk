@@ -58,7 +58,7 @@ rule bwa_idx_genome:
     benchmark:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
     wrapper:
-        "0.79.0/bio/bwa-mem2/index"
+        "v1.21.6/bio/bwa-mem2/index"
 
 rule map_reads:
     input:
