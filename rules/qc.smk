@@ -23,7 +23,7 @@ rule samtools_stats:
         mem_mb = get_resource("samtools_stats","mem"),
         walltime = get_resource("samtools_stats","walltime")
     wrapper:
-        "0.79.0/bio/samtools/stats"
+        "v1.21.6/bio/samtools/stats"
 
 rule genome_dict:
     input:
