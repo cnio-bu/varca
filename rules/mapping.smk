@@ -80,7 +80,7 @@ rule map_reads:
         mem_mb = get_resource("map_reads","mem"),
         walltime = get_resource("map_reads","walltime")
     wrapper:
-        "0.79.0/bio/bwa-mem2/mem"
+        "v1.21.6/bio/bwa-mem2/mem"
 
 rule mark_duplicates:
     input:
