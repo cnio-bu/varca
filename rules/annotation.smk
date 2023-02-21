@@ -27,7 +27,7 @@ rule snpeff:
     params:
         extra=""
     wrapper:
-        "0.79.0/bio/snpeff/annotate"
+        "v1.23.3/bio/snpeff/annotate"
 
 rule vep_gatk:
     input:
