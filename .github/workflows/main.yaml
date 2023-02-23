@@ -20,10 +20,8 @@ jobs:
         miniforge-version: latest
         use-mamba: true
         environment-file: .test/environment.yaml
-        activate-environment: test
     - name: Generate test data
       run: |
-        conda activate test
         bwa index .test/data/ref/genome.chr21.fa
         samtools faidx .test/data/ref/genome.chr21.fa
         gatk CreateSequenceDictionary -R .test/data/ref/genome.chr21.fa
