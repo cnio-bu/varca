@@ -21,6 +21,7 @@ jobs:
         use-mamba: true
         environment-file: .test/environment.yaml
     - name: Generate test data
+      shell: bash -el {0}
       run: |
         bwa index .test/data/ref/genome.chr21.fa
         samtools faidx .test/data/ref/genome.chr21.fa
