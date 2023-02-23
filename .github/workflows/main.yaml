@@ -1,0 +1,36 @@
+name: Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      with:
+        submodules: true
+    - uses: conda-incubator/setup-miniconda@v2
+      with:
+        auto-update-conda: true
+        channels: conda-forge,bioconda
+        channel-priority: strict
+        miniforge-variant: Mambaforge
+        miniforge-version: latest
+        use-mamba: true
+        environment-file: .test/environment.yaml
+    - name: Generate test data
+      shell: bash -el {0}
+      run: |
+        bwa index .test/data/ref/genome.chr21.fa
+        samtools faidx .test/data/ref/genome.chr21.fa
+        gatk CreateSequenceDictionary -R .test/data/ref/genome.chr21.fa
+    - name: snakemake
+      uses: snakemake/snakemake-github-action@v1.24.0
+      with:
+        directory: .test
+        snakefile: Snakefile
+        args: "--use-conda --show-failed-logs --cores 4 --conda-cleanup-pkgs cache"
