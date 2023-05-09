@@ -15,7 +15,7 @@ It's based on [this workflow](https://github.com/snakemake-workflows/dna-seq-gat
 
 #### Step 1: Install workflow
 
-If you simply want to use this workflow, download and extract the [latest release](https://github.com/snakemake-workflows/dna-seq-gatk-variant-calling/releases).
+If you simply want to use this workflow, clone the repository or download its source code.
 If you intend to modify and further extend this workflow or want to work under version control, fork this repository as outlined in [Advanced](#advanced). The latter way is recommended.
 
 In any case, if you use this workflow in a paper, don't forget to give credits to the authors by citing the URL of this repository and, if available, its DOI (see above).
