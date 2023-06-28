@@ -13,7 +13,7 @@ rule fastqc:
 
 rule samtools_stats:
     input:
-        f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam"
+        bam = f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
     output:
         f"{OUTDIR}/qc/samtools-stats/{{sample}}-{{unit}}.txt"
     log:
@@ -23,7 +23,7 @@ rule samtools_stats:
         mem_mb = get_resource("samtools_stats","mem"),
         walltime = get_resource("samtools_stats","walltime")
     wrapper:
-        "0.79.0/bio/samtools/stats"
+        "v1.25.0/bio/samtools/stats"
 
 rule genome_dict:
     input:
@@ -98,4 +98,4 @@ rule multiqc:
         mem_mb = get_resource("multiqc","mem"),
         walltime = get_resource("multiqc","walltime")
     wrapper:
-        "0.79.0/bio/multiqc"
+        "v1.25.0/bio/multiqc"

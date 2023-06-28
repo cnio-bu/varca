@@ -58,20 +58,20 @@ rule bwa_idx_genome:
     benchmark:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
     wrapper:
-        "0.79.0/bio/bwa-mem2/index"
+        "v1.25.0/bio/bwa-mem2/index"
 
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64",
+        idx=multiext(f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome']), ".amb", ".ann", ".bwt.2bit.64", ".pac"),
         alt=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".alt" if config['ref']['genome_alt'] != None else []
     output:
         temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
         f"{LOGDIR}/bwa_mem/{{sample}}-{{unit}}.log"
     params:
-        index=config["ref"]["genome_idx"]+os.path.basename(config['ref']['genome']),
-        extra=get_read_group,
+        extra = get_read_group,
+        sort_extra='',
         sort="samtools",
         sort_order="coordinate"
     shadow: "shallow"
@@ -80,7 +80,7 @@ rule map_reads:
         mem_mb = get_resource("map_reads","mem"),
         walltime = get_resource("map_reads","walltime")
     wrapper:
-        "0.79.0/bio/bwa-mem2/mem"
+        "v1.25.0/bio/bwa-mem2/mem"
 
 rule mark_duplicates:
     input:
@@ -111,7 +111,7 @@ checkpoint genome_faidx:
         mem_mb = get_resource("genome_faidx","mem"),
         walltime = get_resource("genome_faidx","walltime")
     wrapper:
-        "0.79.0/bio/samtools/faidx"
+        "v1.25.0/bio/samtools/faidx"
 
 rule obtain_recal_table:
     input:
@@ -167,7 +167,7 @@ rule samtools_index:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v1.25.0/bio/samtools/index"
 
 rule samtools_index_sorted:
     input:
@@ -181,7 +181,7 @@ rule samtools_index_sorted:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v1.25.0/bio/samtools/index"
 
 rule index_known_variants:
     input:

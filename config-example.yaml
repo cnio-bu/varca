@@ -91,9 +91,9 @@ annotation:
     # If set to true, a cache directory must be created using the instructions of VEP. Using a cache allows for a fastest and most efficient way to use VEP
     cache: true
     #Indicate the version of the cache if cache is set to true. e.g. 100. This version must match the one indicated in the vep environment (vep.yaml). The version of vep.yaml can be modified according to the preferences, but version in cache and vep environment must be the same
-    cache_version: 100
+    cache_version: 105
     #Indicate the path to the cache files if cache is set to true
-    cache_directory: /home/epineiro/Programs/VEP/VEP100/.vep/
+    cache_directory: /home/epineiro/Programs/VEP/VEP105/.vep/
     #Indicate the assembly version of the reference genome
     assembly: GRCh38
     #Indicate the annotations to include with the VEP execution and additional parameters. See the documentation (https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html) for additional details.
