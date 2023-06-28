@@ -18,7 +18,7 @@ rule select_calls:
         mem_mb = get_resource("select_calls","mem"),
         walltime = get_resource("select_calls","walltime")
     wrapper:
-        "0.79.0/bio/gatk/selectvariants"
+        "v2.0.0/bio/gatk/selectvariants"
 
 
 def get_filter(wildcards):
@@ -42,7 +42,7 @@ rule hard_filter_calls:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{group}}.{{vartype}}.log"
     wrapper:
-        "0.79.0/bio/gatk/variantfiltration"
+        "v2.0.0/bio/gatk/variantfiltration"
 
 
 rule recalibrate_calls:
@@ -71,7 +71,7 @@ rule recalibrate_calls:
         mem_mb = get_resource("recalibrate_calls","mem"),
         walltime = get_resource("recalibrate_calls","walltime")
     wrapper:
-        "0.79.0/bio/gatk/variantrecalibrator"
+        "v2.0.0/bio/gatk/variantrecalibrator"
 
 rule merge_calls:
     input:
@@ -91,43 +91,46 @@ rule merge_calls:
     params:
         extra = ""
     wrapper:
-        "0.79.0/bio/picard/mergevcfs"
+        "v2.0.0/bio/picard/mergevcfs"
 
 rule learn_read_orientation_model:
     input:
         f1r2=f"{OUTDIR}/mutect/{{sample}}.f1r2.tar.gz"
     output:
         rom=f"{OUTDIR}/mutect/{{sample}}_read_orientation_model.tar.gz"
-    conda: "../envs/gatk.yaml"
     log:
         f"{LOGDIR}/gatk/read_orientation_model.{{sample}}.log"
-    shell:"""
-        gatk LearnReadOrientationModel -I {input.f1r2} -O {output.rom}
-    """
-
+    threads: get_resource("learn_read_orientation_model", "threads")
+    resources:
+        mem_mb = get_resource("learn_read_orientation_model","mem"),
+        walltime = get_resource("learn_read_orientation_model","walltime")
+    wrapper:
+        "v2.0.0/bio/gatk/learnreadorientationmodel"
 
 rule filter_mutect_calls:
     input:
         vcf=f"{OUTDIR}/mutect/{{sample}}.vcf.gz",
         ref=config["ref"]["genome"],
-        rom=f"{OUTDIR}/mutect/{{sample}}_read_orientation_model.tar.gz" if config["filtering"]["mutect"]["lrom"] else []
+        f1r2=f"{OUTDIR}/mutect/{{sample}}_read_orientation_model.tar.gz" if config["filtering"]["mutect"]["lrom"] else []
     output:
-        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable.vcf.gz"
+        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlabel.vcf.gz"
     params:
-        rom="--ob-priors " if config["filtering"]["mutect"]["lrom"] else ""
-    conda: "../envs/gatk.yaml"
+        extra=config["params"]["gatk"]["mutect"]
     log:
         f"{LOGDIR}/gatk/mutect_filter.{{sample}}.log"
-    shell:"""
-        gatk FilterMutectCalls -R {input.ref} -V {input.vcf} {params.rom} {input.rom} -O {output}
-    """
+    threads: get_resource("mutect_filter", "threads")
+    resources:
+        mem_mb = get_resource("mutect_filter","mem"),
+        walltime = get_resource("mutect_filter","walltime")
+    wrapper:
+        "v2.0.0/bio/gatk/filtermutectcalls"
 
 rule filter_mutect_2:
     input:
-        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable.vcf.gz",
+        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlabel.vcf.gz",
         ref=config["ref"]["genome"]
     output:
-        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlable_filtered.vcf.gz"
+        vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlabel_filtered.vcf.gz"
     params:
         filters={"DPfilter": config["filtering"]["mutect"]["depth"]}
     threads: get_resource("hard_filter_calls","threads")
@@ -137,4 +140,4 @@ rule filter_mutect_2:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
     wrapper:
-        "0.79.0/bio/gatk/variantfiltration"
+        "v2.0.0/bio/gatk/variantfiltration"

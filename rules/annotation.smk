@@ -9,15 +9,17 @@ rule snpeff_download:
         mem_mb = get_resource("snpeff","mem"),
         walltime = get_resource("snpeff","walltime")
     wrapper:
-        "v1.23.3/bio/snpeff/download"
+        "v2.0.0/bio/snpeff/download"
 
 rule snpeff:
     input:
         calls = f"{OUTDIR}/filtered/{{group}}.vcf.gz",
         db = f"resources/snpeff/{config['ref']['name']}"
     output:
-        calls=report(f"{OUTDIR}/annotated/{{group}}.snpeff.vcf.gz", caption="../report/vcf.rst", category="Calls"),
-        csvstats=f"{OUTDIR}/snpeff/{{group}}.csv"
+        calls=report(f"{OUTDIR}/annotated/{{group}}.snpeff.vcf.gz",
+        caption="../report/vcf.rst", category="Calls"),
+        csvstats=f"{OUTDIR}/snpeff/{{group}}.csv",
+        stats="snpeff/{{group}}.html"
     log:
         f"{LOGDIR}/snpeff/{{group}}.snpeff.log"
     threads: get_resource("snpeff","threads")
@@ -27,7 +29,7 @@ rule snpeff:
     params:
         extra=""
     wrapper:
-        "0.79.0/bio/snpeff/annotate"
+        "v2.0.0/bio/snpeff/annotate"
 
 rule vep_gatk:
     input:
@@ -49,7 +51,7 @@ rule vep_gatk:
 
 rule vep_mutect:
     input:
-        f"{OUTDIR}/mutect_filter/{{sample}}_passlable_filtered.vcf.gz"
+        f"{OUTDIR}/mutect_filter/{{sample}}_passlabel_filtered.vcf.gz"
     output:
         f"{OUTDIR}/annotated/{{sample}}_mutect.vep.vcf.gz"
     params:
