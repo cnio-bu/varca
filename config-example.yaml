@@ -7,15 +7,15 @@ logdir: "log"
 
 ref:
   # Genome database of snpeff to be used in the annotation with this resource. Available databases can be checked with java -jar snpEff.jar databases
-  name: GRCh38.86
+  name: GRCh38.105
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
-  genome: /home/epineiro/REFERENCES/Homo_sapiens/HG38/hg38.fa
+  genome: GRCh38.primary_assembly.genome.fa.gz
   # Path to the directory with the reference indexes for the aligment. Indexes will be retrieve from this directory or created in it if they do not exist
-  genome_idx: /home/epineiro/REFERENCES/Homo_sapiens/HG38/indexes/bwa_mem2/
-  # If the reference genome contains alternative contigs, indicate the path to the .alt index file to account for their presence in the alignment. Otherwise, leave the field empty. The specified file will be renamed to the indicated reference genome and included in the index directory. Please, visit https://github.com/lh3/bwa/blob/master/README-alt.md and https://gatk.broadinstitute.org/hc/en-us/articles/360037498992--How-to-Map-reads-to-a-reference-with-alternate-contigs-like-GRCH38.
-  genome_alt: /home/epineiro/REFERENCES/Homo_sapiens/HG38/indexes/hs38DH.fa.alt
+  genome_idx: indexes/bwa_mem2/
+  # If the reference genome contains alternative contigs, set 'genome_alt' to true to account for their presence in the alignment. The corresponding '.alt' index file should be present in the genome index directory with the same basename as the reference genome. For more details, please, visit https://github.com/lh3/bwa/blob/master/README-alt.md and https://gatk.broadinstitute.org/hc/en-us/articles/360037498992--How-to-Map-reads-to-a-reference-with-alternate-contigs-like-GRCH38.
+  genome_alt: true
   # Path to any database of known variants, ideally as it is provided by the GATK bundle.
-  known_variants: /home/epineiro/REFERENCES/Homo_sapiens/HG38/dbsnp_151.hg38.vcf
+  known_variants: /storage/scratch01/shared/databases/dbsnp/156/GCF_000001405.40_ucsc_chrnames.vcf.gz
 
 filtering:
   # Set to true in order to apply machine learning based recalibration of
@@ -38,7 +38,7 @@ processing:
   remove_duplicates: true
   # Uncomment and point to a bed file with, e.g., captured regions if necessary,
   # see https://gatkforums.broadinstitute.org/gatk/discussion/4133/when-should-i-use-l-to-pass-in-a-list-of-intervals.
-  restrict_regions: /home/epineiro/REFERENCES/Homo_sapiens/HG38/S04380219_Padded_v5_hg38_varca.bed
+  restrict_regions: S04380219_Padded_v5_hg38_varca.bed
   # If regions are restricted, uncomment this to enlarge them by the given value in order to include
   # flanking areas.
   # region_padding: 100
@@ -51,15 +51,15 @@ params:
     #If vqsr set to true, fill the following section with the required information (see VariantRecalibrator documentation in GATK)
     VariantRecalibrator:
       #paths to the necessary resources
-      hapmap: "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_hapmap_3.3.hg38.vcf.gz"
-      omni: "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_1000G_omni2.5.hg38.vcf.gz"
-      g1k: "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_1000G_phase1.snps.high_confidence.hg38.vcf.gz"
-      dbsnp: "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf"
+      hapmap: "resources_broad_hg38_v0_hapmap_3.3.hg38.vcf.gz"
+      omni: "resources_broad_hg38_v0_1000G_omni2.5.hg38.vcf.gz"
+      g1k: "resources_broad_hg38_v0_1000G_phase1.snps.high_confidence.hg38.vcf.gz"
+      dbsnp: "resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf"
       #paths to the resource indexes
-      aux: ["/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_hapmap_3.3.hg38.vcf.gz.tbi",
-            "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_1000G_omni2.5.hg38.vcf.gz.tbi",
-            "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi",
-            "/home/epineiro/REFERENCES/Homo_sapiens/HG38/resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf.idx"]
+      aux: ["resources_broad_hg38_v0_hapmap_3.3.hg38.vcf.gz.tbi",
+            "resources_broad_hg38_v0_1000G_omni2.5.hg38.vcf.gz.tbi",
+            "resources_broad_hg38_v0_1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi",
+            "resources_broad_hg38_v0_Homo_sapiens_assembly38.dbsnp138.vcf.idx"]
       #set definition for each resource
       parameters: {"hapmap": {"known": False, "training": True, "truth": True, "prior": 15.0},
                    "omni":   {"known": False, "training": True, "truth": False, "prior": 12.0},
@@ -68,6 +68,7 @@ params:
       #Names of the annotations used for calculations
       annotation: ["QD", "MQ", "MQRankSum", "ReadPosRankSum", "FS", "SOR"]
       extra: ""
+    mutect: ""
   picard:
     MarkDuplicates: "REMOVE_DUPLICATES=true"
   trimmomatic:
@@ -91,13 +92,13 @@ annotation:
     # If set to true, a cache directory must be created using the instructions of VEP. Using a cache allows for a fastest and most efficient way to use VEP
     cache: true
     #Indicate the version of the cache if cache is set to true. e.g. 100. This version must match the one indicated in the vep environment (vep.yaml). The version of vep.yaml can be modified according to the preferences, but version in cache and vep environment must be the same
-    cache_version: 100
+    cache_version: 109
     #Indicate the path to the cache files if cache is set to true
-    cache_directory: /home/epineiro/Programs/VEP/VEP100/.vep/
+    cache_directory: VEP/VEP100/.vep/
     #Indicate the assembly version of the reference genome
     assembly: GRCh38
     #Indicate the annotations to include with the VEP execution and additional parameters. See the documentation (https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html) for additional details.
-    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris --fasta /home/epineiro/Programs/VEP/VEP100/.vep/homo_sapiens/100_GRCh38/Homo_sapiens.GRCh38.dna.toplevel.fa.gz"
+    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris --fasta VEP/VEP109/homo_sapiens/109_GRCh38/Homo_sapiens.GRCh38.dna.toplevel.fa.gz"
 
 resources:
     default:
@@ -143,3 +144,9 @@ resources:
         mem: 32000
         threads: 32
         walltime: 1440
+    bwa_idx_genome:
+        mem: 120000
+        walltime: 1440
+    fastqc:
+        mem: 4000
+        walltime: 30

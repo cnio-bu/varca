@@ -9,7 +9,7 @@ rule fastqc:
         mem_mb = get_resource("fastqc","mem"),
         walltime = get_resource("fastqc","walltime")
     wrapper:
-        "0.79.0/bio/fastqc"
+        "v2.0.0/bio/fastqc"
 
 rule samtools_stats:
     input:
@@ -23,44 +23,39 @@ rule samtools_stats:
         mem_mb = get_resource("samtools_stats","mem"),
         walltime = get_resource("samtools_stats","walltime")
     wrapper:
-        "0.79.0/bio/samtools/stats"
+        "v2.0.0/bio/samtools/stats"
 
 rule genome_dict:
     input:
         genome=config["ref"]["genome"],
         fai=f"{config['ref']['genome']}.fai"
     output:
-        dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
+        dict=re.sub("\.fa","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
+    log:
+        f"{LOGDIR}/picard/genome_dict/CreateSequenceDictionary.log"
     threads: get_resource("genome_dict","threads")
     resources:
         mem_mb = get_resource("genome_dict","mem"),
         walltime = get_resource("genome_dict","walltime")
-    conda:
-        "../envs/gatk.yaml"
-    log:
-        stdout=f"{LOGDIR}/genome_dict/log.out",
-        stderr=f"{LOGDIR}/genome_dict/log.err"
-    shell:"""
-        gatk CreateSequenceDictionary -R {input.genome} > {log.stdout} 2> {log.stderr}
-    """
+    wrapper:
+        "v2.0.0/bio/picard/createsequencedictionary"
 
 if "restrict_regions" in config["processing"]:
     rule bed_to_interval:
         input:
-            file=config["processing"]["restrict_regions"],
-            SD=config["ref"]["genome"],
-            dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict"
+            bed=config["processing"]["restrict_regions"],
+            dict=re.sub("\.fa.*","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
         output:
             temp(f"{OUTDIR}/regions.intervals")
-        conda:
-            "../envs/picard.yaml"
+        log:
+            f"{LOGDIR}/picard/bed_to_interval/bedtointervals.log"
         resources:
-            mem_mb = get_resource("bed_to_interval","mem"),
+            mem_mb =  get_resource("bed_to_interval","mem"),
             walltime = get_resource("bed_to_interval","walltime")
         params:
-            extra = "-Xmx{}m".format(get_resource("bed_to_interval","mem"))
-        shell:
-            "picard BedToIntervalList {params.extra} I={input.file} O={output} SD={input.SD}"
+            extra = ""
+        wrapper:
+            "v2.0.0/bio/picard/bedtointervallist"
 
     rule picard_collect_hs_metrics:
         input:
@@ -79,7 +74,7 @@ if "restrict_regions" in config["processing"]:
         params:
             extra = ""
         wrapper:
-            "0.79.0/bio/picard/collecthsmetrics"
+            "v2.0.0/bio/picard/collecthsmetrics"
 
 rule multiqc:
     input:
@@ -98,4 +93,4 @@ rule multiqc:
         mem_mb = get_resource("multiqc","mem"),
         walltime = get_resource("multiqc","walltime")
     wrapper:
-        "0.79.0/bio/multiqc"
+        "v2.0.0/bio/multiqc"

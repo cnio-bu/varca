@@ -13,7 +13,7 @@ rule trim_reads_se:
         mem_mb = get_resource("trim_reads","mem"),
         walltime = get_resource("trim_reads","walltime")
     wrapper:
-        "0.79.0/bio/trimmomatic/se"
+        "v2.0.0/bio/trimmomatic/se"
 
 rule trim_reads_pe:
     input:
@@ -34,7 +34,7 @@ rule trim_reads_pe:
         mem_mb = get_resource("trim_reads","mem"),
         walltime = get_resource("trim_reads","walltime")
     wrapper:
-        "0.79.0/bio/trimmomatic/pe"
+        "v2.0.0/bio/trimmomatic/pe"
 
 idx_cmd = "bwa index {input} > {log.out} 2> {log.err}"
 rule bwa_idx_genome:
@@ -58,19 +58,18 @@ rule bwa_idx_genome:
     benchmark:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
     wrapper:
-        "0.79.0/bio/bwa-mem2/index"
+        "v2.0.0/bio/bwa-mem2/index"
 
 rule map_reads:
     input:
         reads=get_trimmed_reads,
-        idx=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".bwt.2bit.64",
-        alt=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".alt" if config['ref']['genome_alt'] != None else []
+        idx=multiext(f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome']), ".amb", ".ann", ".bwt.2bit.64", ".pac"),
+        alt=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".alt" if config['ref']['genome_alt'] else []
     output:
         temp(f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam")
     log:
         f"{LOGDIR}/bwa_mem/{{sample}}-{{unit}}.log"
     params:
-        index=config["ref"]["genome_idx"]+os.path.basename(config['ref']['genome']),
         extra=get_read_group,
         sort="samtools",
         sort_order="coordinate"
@@ -80,11 +79,11 @@ rule map_reads:
         mem_mb = get_resource("map_reads","mem"),
         walltime = get_resource("map_reads","walltime")
     wrapper:
-        "0.79.0/bio/bwa-mem2/mem"
+        "v2.0.0/bio/bwa-mem2/mem"
 
 rule mark_duplicates:
     input:
-        f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam"
+        bams=f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bam"
     output:
         bam=temp(f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bam"),
         metrics=f"{OUTDIR}/qc/dedup/{{sample}}-{{unit}}.metrics.txt"
@@ -97,7 +96,7 @@ rule mark_duplicates:
     params:
         config["params"]["picard"]["MarkDuplicates"] + " -Xmx{}m".format(get_resource("mark_duplicates","mem"))
     wrapper:
-        "0.79.0/bio/picard/markduplicates"
+        "v2.0.0/bio/picard/markduplicates"
 
 checkpoint genome_faidx:
     input:
@@ -111,7 +110,7 @@ checkpoint genome_faidx:
         mem_mb = get_resource("genome_faidx","mem"),
         walltime = get_resource("genome_faidx","walltime")
     wrapper:
-        "0.79.0/bio/samtools/faidx"
+        "v2.0.0/bio/samtools/faidx"
 
 rule obtain_recal_table:
     input:
@@ -119,7 +118,7 @@ rule obtain_recal_table:
         bai=get_recal_input(bai=True),
         ref=config["ref"]["genome"],
         ref_idx=f"{config['ref']['genome']}.fai",
-        ref_dict=os.path.splitext(config["ref"]["genome"])[0] + ".dict",
+        dict=re.sub("\.fa.*","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict",
         known=config["ref"]["known_variants"],
         known_idx=f"{config['ref']['known_variants']}.tbi"
     output:
@@ -133,7 +132,7 @@ rule obtain_recal_table:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
         walltime = get_resource("recalibrate_base_qualities","walltime")
     wrapper:
-        "0.79.0/bio/gatk/baserecalibrator"
+        "v2.0.0/bio/gatk/baserecalibrator"
 
 rule recalibrate_base_qualities:
     input:
@@ -153,7 +152,7 @@ rule recalibrate_base_qualities:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
         walltime = get_resource("recalibrate_base_qualities","walltime")
     wrapper:
-        "0.79.0/bio/gatk/applybqsr"
+        "v2.0.0/bio/gatk/applybqsr"
 
 rule samtools_index:
     input:
@@ -167,7 +166,7 @@ rule samtools_index:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v2.0.0/bio/samtools/index"
 
 rule samtools_index_sorted:
     input:
@@ -181,7 +180,7 @@ rule samtools_index_sorted:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
-        "0.79.0/bio/samtools/index"
+        "v2.0.0/bio/samtools/index"
 
 rule index_known_variants:
     input:
@@ -198,11 +197,3 @@ rule index_known_variants:
     shell:"""
         gatk IndexFeatureFile -I {input.file} -O {output.index}
     """
-
-rule use_alt_contigs_file:
-    input:
-        file=f"{config['ref']['genome_alt']}"
-    output:
-        file=f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".alt"
-    shell:
-        "cp {input.file} {output.file}"
