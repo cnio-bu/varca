@@ -7,7 +7,7 @@ rule snpeff_download:
         reference=f"{config['ref']['name']}"
     resources:
         mem_mb = get_resource("snpeff","mem"),
-        walltime = get_resource("snpeff","walltime")
+        runtime = get_resource("snpeff","walltime")
     wrapper:
         "v2.0.0/bio/snpeff/download"
 
@@ -25,7 +25,7 @@ rule snpeff:
     threads: get_resource("snpeff","threads")
     resources:
         mem_mb = get_resource("snpeff","mem"),
-        walltime = get_resource("snpeff","walltime")
+        runtime = get_resource("snpeff","walltime")
     params:
         extra=""
     wrapper:
@@ -42,7 +42,7 @@ rule vep_gatk:
     threads: get_resource("vep","threads")
     resources:
         mem_mb = get_resource("vep","mem"),
-        walltime = get_resource("vep","walltime")
+        runtime = get_resource("vep","walltime")
     log:
         f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
     shell: """
@@ -60,7 +60,7 @@ rule vep_mutect:
     threads: get_resource("vep","threads")
     resources:
         mem_mb = get_resource("vep","mem"),
-        walltime = get_resource("vep","walltime")
+        runtime = get_resource("vep","walltime")
     log:
         f"{LOGDIR}/vep/mutect_{{sample}}_vep.log"
     shell: """

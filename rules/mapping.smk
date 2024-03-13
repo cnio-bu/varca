@@ -11,7 +11,7 @@ rule trim_reads_se:
     threads: get_resource("trim_reads","threads")
     resources:
         mem_mb = get_resource("trim_reads","mem"),
-        walltime = get_resource("trim_reads","walltime")
+        runtime = get_resource("trim_reads","walltime")
     wrapper:
         "v2.0.0/bio/trimmomatic/se"
 
@@ -32,7 +32,7 @@ rule trim_reads_pe:
     threads: get_resource("trim_reads","threads")
     resources:
         mem_mb = get_resource("trim_reads","mem"),
-        walltime = get_resource("trim_reads","walltime")
+        runtime = get_resource("trim_reads","walltime")
     wrapper:
         "v2.0.0/bio/trimmomatic/pe"
 
@@ -50,7 +50,7 @@ rule bwa_idx_genome:
     threads: get_resource("bwa_idx_genome","threads")
     resources:
         mem_mb = get_resource("bwa_idx_genome","mem"),
-        walltime = get_resource("bwa_idx_genome","walltime")
+        runtime = get_resource("bwa_idx_genome","walltime")
     log:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.log"
     params:
@@ -77,7 +77,7 @@ rule map_reads:
     threads: get_resource("map_reads","threads")
     resources:
         mem_mb = get_resource("map_reads","mem"),
-        walltime = get_resource("map_reads","walltime")
+        runtime = get_resource("map_reads","walltime")
     wrapper:
         "v2.0.0/bio/bwa-mem2/mem"
 
@@ -92,7 +92,7 @@ rule mark_duplicates:
     threads: get_resource("mark_duplicates","threads")
     resources:
         mem_mb = get_resource("mark_duplicates","mem"),
-        walltime = get_resource("mark_duplicates","walltime")
+        runtime = get_resource("mark_duplicates","walltime")
     params:
         config["params"]["picard"]["MarkDuplicates"] + " -Xmx{}m".format(get_resource("mark_duplicates","mem"))
     wrapper:
@@ -108,7 +108,7 @@ checkpoint genome_faidx:
     threads: get_resource("genome_faidx","threads")
     resources:
         mem_mb = get_resource("genome_faidx","mem"),
-        walltime = get_resource("genome_faidx","walltime")
+        runtime = get_resource("genome_faidx","walltime")
     wrapper:
         "v2.0.0/bio/samtools/faidx"
 
@@ -130,7 +130,7 @@ rule obtain_recal_table:
     threads: get_resource("recalibrate_base_qualities","threads")
     resources:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
-        walltime = get_resource("recalibrate_base_qualities","walltime")
+        runtime = get_resource("recalibrate_base_qualities","walltime")
     wrapper:
         "v2.0.0/bio/gatk/baserecalibrator"
 
@@ -150,7 +150,7 @@ rule recalibrate_base_qualities:
         f"{LOGDIR}/gatk/gatk_applybqsr/{{sample}}-{{unit}}.log"
     resources:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
-        walltime = get_resource("recalibrate_base_qualities","walltime")
+        runtime = get_resource("recalibrate_base_qualities","walltime")
     wrapper:
         "v2.0.0/bio/gatk/applybqsr"
 
@@ -162,7 +162,7 @@ rule samtools_index:
     threads: get_resource("samtools_index","threads")
     resources:
         mem_mb = get_resource("samtools_index","mem"),
-        walltime = get_resource("samtools_index","walltime")
+        runtime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
@@ -176,7 +176,7 @@ rule samtools_index_sorted:
     threads: get_resource("samtools_index","threads")
     resources:
         mem_mb = get_resource("samtools_index","mem"),
-        walltime = get_resource("samtools_index","walltime")
+        runtime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     wrapper:
@@ -189,7 +189,7 @@ rule index_known_variants:
         index=f"{config['ref']['known_variants']}.tbi"
     resources:
         mem_mb = get_resource("index_known_variants","mem"),
-        walltime = get_resource("index_known_variants","walltime")
+        runtime = get_resource("index_known_variants","walltime")
     conda:
         "../envs/gatk.yaml"
     log:
