@@ -7,7 +7,7 @@ rule fastqc:
     threads: get_resource("fastqc","threads")
     resources:
         mem_mb = get_resource("fastqc","mem"),
-        walltime = get_resource("fastqc","walltime")
+        runtime = get_resource("fastqc","walltime")
     wrapper:
         "v2.0.0/bio/fastqc"
 
@@ -21,7 +21,7 @@ rule samtools_stats:
     threads: get_resource("samtools_stats","threads")
     resources:
         mem_mb = get_resource("samtools_stats","mem"),
-        walltime = get_resource("samtools_stats","walltime")
+        runtime = get_resource("samtools_stats","walltime")
     wrapper:
         "v2.0.0/bio/samtools/stats"
 
@@ -36,7 +36,7 @@ rule genome_dict:
     threads: get_resource("genome_dict","threads")
     resources:
         mem_mb = get_resource("genome_dict","mem"),
-        walltime = get_resource("genome_dict","walltime")
+        runtime = get_resource("genome_dict","walltime")
     wrapper:
         "v2.0.0/bio/picard/createsequencedictionary"
 
@@ -51,7 +51,7 @@ if "restrict_regions" in config["processing"]:
             f"{LOGDIR}/picard/bed_to_interval/bedtointervals.log"
         resources:
             mem_mb =  get_resource("bed_to_interval","mem"),
-            walltime = get_resource("bed_to_interval","walltime")
+            runtime = get_resource("bed_to_interval","walltime")
         params:
             extra = ""
         wrapper:
@@ -70,7 +70,7 @@ if "restrict_regions" in config["processing"]:
         threads: get_resource("picard_collect_hs_metrics","threads")
         resources:
             mem_mb = get_resource("picard_collect_hs_metrics","mem"),
-            walltime = get_resource("picard_collect_hs_metrics","walltime")
+            runtime = get_resource("picard_collect_hs_metrics","walltime")
         params:
             extra = ""
         wrapper:
@@ -91,6 +91,6 @@ rule multiqc:
     threads: get_resource("multiqc","threads")
     resources:
         mem_mb = get_resource("multiqc","mem"),
-        walltime = get_resource("multiqc","walltime")
+        runtime = get_resource("multiqc","walltime")
     wrapper:
         "v2.0.0/bio/multiqc"

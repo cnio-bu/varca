@@ -3,7 +3,7 @@ if "restrict_regions" in config["processing"]:
         input:
             config["processing"]["restrict_regions"]
         output:
-            temp("{OUTDIR}/called/regions.sorted.bed")
+            temp(f"{OUTDIR}/called/regions.sorted.bed")
         conda:
             "../envs/bedops.yaml"
         shell:
@@ -34,7 +34,7 @@ rule call_variants:
     threads: get_resource("call_variants","threads")
     resources:
         mem_mb = get_resource("call_variants","mem"),
-        walltime = get_resource("call_variants","walltime")
+        runtime = get_resource("call_variants","walltime")
     params:
         extra=get_call_variants_params
     wrapper:
@@ -52,7 +52,7 @@ rule combine_calls:
     threads: get_resource("combine_calls","threads")
     resources:
         mem_mb = get_resource("combine_calls","mem"),
-        walltime = get_resource("combine_calls","walltime")
+        runtime = get_resource("combine_calls","walltime")
     wrapper:
         "v2.0.0/bio/gatk/combinegvcfs"
 
@@ -70,7 +70,7 @@ rule genotype_variants:
     threads: get_resource("genotype_variants","threads")
     resources:
         mem_mb = get_resource("genotype_variants","mem"),
-        walltime = get_resource("genotype_variants","walltime")
+        runtime = get_resource("genotype_variants","walltime")
     wrapper:
         "v2.0.0/bio/gatk/genotypegvcfs"
 
@@ -85,7 +85,7 @@ rule merge_variants:
     threads: get_resource("merge_variants","threads")
     resources:
         mem_mb = get_resource("merge_variants","mem"),
-        walltime = get_resource("merge_variants","walltime")
+        runtime = get_resource("merge_variants","walltime")
     params:
         extra = ""
     wrapper:
@@ -98,7 +98,7 @@ rule merge_bams:
     threads: get_resource("merge_bams","threads")
     resources:
         mem_mb = get_resource("merge_bams","mem"),
-        walltime = get_resource("merge_bams","walltime")
+        runtime = get_resource("merge_bams","walltime")
     wrapper:
         "v2.0.0/bio/samtools/merge"
 
@@ -110,7 +110,7 @@ rule samtools_index_merged:
     threads: get_resource("samtools_index","threads")
     resources:
         mem_mb = get_resource("samtools_index","mem"),
-        walltime = get_resource("samtools_index","walltime")
+        runtime = get_resource("samtools_index","walltime")
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     wrapper:
@@ -132,7 +132,7 @@ rule mutect:
     threads: get_resource("mutect","threads")
     resources:
         mem_mb = get_resource("mutect","mem"),
-        walltime = get_resource("mutect","walltime")
+        runtime = get_resource("mutect","walltime")
     conda: "../envs/gatk.yaml"
     log:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"

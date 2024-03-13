@@ -16,7 +16,7 @@ rule select_calls:
     threads: get_resource("select_calls","threads")
     resources:
         mem_mb = get_resource("select_calls","mem"),
-        walltime = get_resource("select_calls","walltime")
+        runtime = get_resource("select_calls","walltime")
     wrapper:
         "v2.0.0/bio/gatk/selectvariants"
 
@@ -38,7 +38,7 @@ rule hard_filter_calls:
     threads: get_resource("hard_filter_calls","threads")
     resources:
         mem_mb = get_resource("hard_filter_calls","mem"),
-        walltime = get_resource("hard_filter_calls","walltime")
+        runtime = get_resource("hard_filter_calls","walltime")
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{group}}.{{vartype}}.log"
     wrapper:
@@ -69,7 +69,7 @@ rule recalibrate_calls:
     threads: get_resource("recalibrate_calls","threads")
     resources:
         mem_mb = get_resource("recalibrate_calls","mem"),
-        walltime = get_resource("recalibrate_calls","walltime")
+        runtime = get_resource("recalibrate_calls","walltime")
     wrapper:
         "v2.0.0/bio/gatk/variantrecalibrator"
 
@@ -87,7 +87,7 @@ rule merge_calls:
     threads: get_resource("merge_calls","threads")
     resources:
         mem_mb = get_resource("merge_calls","mem"),
-        walltime = get_resource("merge_calls","walltime")
+        runtime = get_resource("merge_calls","walltime")
     params:
         extra = ""
     wrapper:
@@ -103,7 +103,7 @@ rule learn_read_orientation_model:
     threads: get_resource("learn_read_orientation_model", "threads")
     resources:
         mem_mb = get_resource("learn_read_orientation_model","mem"),
-        walltime = get_resource("learn_read_orientation_model","walltime")
+        runtime = get_resource("learn_read_orientation_model","walltime")
     wrapper:
         "v2.0.0/bio/gatk/learnreadorientationmodel"
 
@@ -121,7 +121,7 @@ rule filter_mutect_calls:
     threads: get_resource("mutect_filter", "threads")
     resources:
         mem_mb = get_resource("mutect_filter","mem"),
-        walltime = get_resource("mutect_filter","walltime")
+        runtime = get_resource("mutect_filter","walltime")
     wrapper:
         "v2.0.0/bio/gatk/filtermutectcalls"
 
@@ -136,7 +136,7 @@ rule filter_mutect_2:
     threads: get_resource("hard_filter_calls","threads")
     resources:
         mem_mb = get_resource("hard_filter_calls","mem"),
-        walltime = get_resource("hard_filter_calls","walltime")
+        runtime = get_resource("hard_filter_calls","walltime")
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
     wrapper:
