@@ -9,7 +9,7 @@ rule fastqc:
         mem_mb = get_resource("fastqc","mem"),
         runtime = get_resource("fastqc","walltime")
     wrapper:
-        "v2.0.0/bio/fastqc"
+        "v3.5.0/bio/fastqc"
 
 rule samtools_stats:
     input:
@@ -23,7 +23,7 @@ rule samtools_stats:
         mem_mb = get_resource("samtools_stats","mem"),
         runtime = get_resource("samtools_stats","walltime")
     wrapper:
-        "v2.0.0/bio/samtools/stats"
+        "v3.5.0/bio/samtools/stats"
 
 rule genome_dict:
     input:
@@ -38,7 +38,7 @@ rule genome_dict:
         mem_mb = get_resource("genome_dict","mem"),
         runtime = get_resource("genome_dict","walltime")
     wrapper:
-        "v2.0.0/bio/picard/createsequencedictionary"
+        "v3.5.0/bio/picard/createsequencedictionary"
 
 if "restrict_regions" in config["processing"]:
     rule bed_to_interval:
@@ -55,7 +55,7 @@ if "restrict_regions" in config["processing"]:
         params:
             extra = ""
         wrapper:
-            "v2.0.0/bio/picard/bedtointervallist"
+            "v3.5.0/bio/picard/bedtointervallist"
 
     rule picard_collect_hs_metrics:
         input:
@@ -74,7 +74,7 @@ if "restrict_regions" in config["processing"]:
         params:
             extra = ""
         wrapper:
-            "v2.0.0/bio/picard/collecthsmetrics"
+            "v3.5.0/bio/picard/collecthsmetrics"
 
 rule multiqc:
     input:
@@ -93,4 +93,4 @@ rule multiqc:
         mem_mb = get_resource("multiqc","mem"),
         runtime = get_resource("multiqc","walltime")
     wrapper:
-        "v2.0.0/bio/multiqc"
+        "v3.5.0/bio/multiqc"

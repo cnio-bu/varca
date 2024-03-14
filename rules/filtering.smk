@@ -18,7 +18,7 @@ rule select_calls:
         mem_mb = get_resource("select_calls","mem"),
         runtime = get_resource("select_calls","walltime")
     wrapper:
-        "v2.0.0/bio/gatk/selectvariants"
+        "v3.5.0/bio/gatk/selectvariants"
 
 
 def get_filter(wildcards):
@@ -42,7 +42,7 @@ rule hard_filter_calls:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{group}}.{{vartype}}.log"
     wrapper:
-        "v2.0.0/bio/gatk/variantfiltration"
+        "v3.5.0/bio/gatk/variantfiltration"
 
 
 rule recalibrate_calls:
@@ -71,7 +71,7 @@ rule recalibrate_calls:
         mem_mb = get_resource("recalibrate_calls","mem"),
         runtime = get_resource("recalibrate_calls","walltime")
     wrapper:
-        "v2.0.0/bio/gatk/variantrecalibrator"
+        "v3.5.0/bio/gatk/variantrecalibrator"
 
 rule merge_calls:
     input:
@@ -91,7 +91,7 @@ rule merge_calls:
     params:
         extra = ""
     wrapper:
-        "v2.0.0/bio/picard/mergevcfs"
+        "v3.5.0/bio/picard/mergevcfs"
 
 rule learn_read_orientation_model:
     input:
@@ -105,7 +105,7 @@ rule learn_read_orientation_model:
         mem_mb = get_resource("learn_read_orientation_model","mem"),
         runtime = get_resource("learn_read_orientation_model","walltime")
     wrapper:
-        "v2.0.0/bio/gatk/learnreadorientationmodel"
+        "v3.5.0/bio/gatk/learnreadorientationmodel"
 
 rule filter_mutect_calls:
     input:
@@ -123,7 +123,7 @@ rule filter_mutect_calls:
         mem_mb = get_resource("mutect_filter","mem"),
         runtime = get_resource("mutect_filter","walltime")
     wrapper:
-        "v2.0.0/bio/gatk/filtermutectcalls"
+        "v3.5.0/bio/gatk/filtermutectcalls"
 
 rule filter_mutect_2:
     input:
@@ -140,4 +140,4 @@ rule filter_mutect_2:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
     wrapper:
-        "v2.0.0/bio/gatk/variantfiltration"
+        "v3.5.0/bio/gatk/variantfiltration"
