@@ -38,7 +38,7 @@ rule call_variants:
     params:
         extra=get_call_variants_params
     wrapper:
-        "v2.0.0/bio/gatk/haplotypecaller"
+        "v3.5.0/bio/gatk/haplotypecaller"
 
 
 rule combine_calls:
@@ -54,7 +54,7 @@ rule combine_calls:
         mem_mb = get_resource("combine_calls","mem"),
         runtime = get_resource("combine_calls","walltime")
     wrapper:
-        "v2.0.0/bio/gatk/combinegvcfs"
+        "v3.5.0/bio/gatk/combinegvcfs"
 
 
 rule genotype_variants:
@@ -72,7 +72,7 @@ rule genotype_variants:
         mem_mb = get_resource("genotype_variants","mem"),
         runtime = get_resource("genotype_variants","walltime")
     wrapper:
-        "v2.0.0/bio/gatk/genotypegvcfs"
+        "v3.5.0/bio/gatk/genotypegvcfs"
 
 
 rule merge_variants:
@@ -89,7 +89,7 @@ rule merge_variants:
     params:
         extra = ""
     wrapper:
-        "v2.0.0/bio/picard/mergevcfs"
+        "v3.5.0/bio/picard/mergevcfs"
 
 rule merge_bams:
     input: lambda wc: get_sample_bams(wc.sample),
@@ -100,7 +100,7 @@ rule merge_bams:
         mem_mb = get_resource("merge_bams","mem"),
         runtime = get_resource("merge_bams","walltime")
     wrapper:
-        "v2.0.0/bio/samtools/merge"
+        "v3.5.0/bio/samtools/merge"
 
 rule samtools_index_merged:
     input:
@@ -114,7 +114,7 @@ rule samtools_index_merged:
     log:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     wrapper:
-        "v2.0.0/bio/samtools/index"
+        "v3.5.0/bio/samtools/index"
 
 rule mutect:
     input:
