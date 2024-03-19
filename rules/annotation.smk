@@ -31,38 +31,72 @@ rule snpeff:
     wrapper:
         "v3.5.0/bio/snpeff/annotate"
 
+rule get_vep_cache:
+    output:
+        directory(f"{config['annotation']['vep']['cache_directory']}/cache")
+    params:
+        species=f"{config['annotation']['vep']['species']}",
+        build=f"{config['annotation']['vep']['assembly']}",
+        release=f"{config['annotation']['vep']['cache_version']}"
+    log:
+        f"{LOGDIR}/vep/get_vep_cache.log"
+    resources:
+        threads = get_resource("get_vep_cache","threads"),
+        mem_mb = get_resource("get_vep_cache","mem"),
+        runtime = get_resource("get_vep_cache","walltime")
+    wrapper:
+        "v3.5.0/bio/vep/cache"
+
+rule download_vep_plugins:
+    output:
+        directory(f"{config['annotation']['vep']['cache_directory']}/plugins")
+    params:
+        release=f"{config['annotation']['vep']['cache_version']}"
+    log:
+        f"{LOGDIR}/vep/download_vep_plugins.log"
+    resources:
+        threads = get_resource("download_vep_plugins","threads"),
+        mem_mb = get_resource("download_vep_plugins","mem"),
+        runtime = get_resource("download_vep_plugins","walltime")
+    wrapper:
+        "v3.5.0/bio/vep/plugins"
+
 rule vep_gatk:
     input:
-        f"{OUTDIR}/filtered/{{group}}.vcf.gz"
+        calls=f"{OUTDIR}/filtered/{{group}}.vcf.gz",
+        cache=f"{config['annotation']['vep']['cache_directory']}/cache",
+        plugins=f"{config['annotation']['vep']['cache_directory']}/plugins"
     output:
-        f"{OUTDIR}/annotated/{{group}}.vep.vcf.gz"
+        calls=f"{OUTDIR}/annotated/{{group}}.vep.vcf.gz",
+        stats=f"{OUTDIR}/annotated/{{group}}.vep.vcf.gz_summary.html"
     params:
-        get_vep_params()
-    conda:"../envs/vep.yaml"
+        plugins=f"{config['annotation']['vep']['plugins']}",
+        extra=f"{config['annotation']['vep']['extra']}"
+    log:
+        f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
     threads: get_resource("vep","threads")
     resources:
         mem_mb = get_resource("vep","mem"),
         runtime = get_resource("vep","walltime")
-    log:
-        f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
-    shell: """
-        vep -i {input} -o {output} --vcf --compress_output gzip --force_overwrite {params} --fork {threads}
-    """
+    wrapper:
+        "v3.5.0/bio/vep/annotate"
 
 rule vep_mutect:
     input:
-        f"{OUTDIR}/mutect_filter/{{sample}}_passlabel_filtered.vcf.gz"
+        calls=f"{OUTDIR}/mutect_filter/{{sample}}_passlabel_filtered.vcf.gz",
+        cache=f"{config['annotation']['vep']['cache_directory']}/cache",
+        plugins=f"{config['annotation']['vep']['cache_directory']}/plugins"
     output:
-        f"{OUTDIR}/annotated/{{sample}}_mutect.vep.vcf.gz"
+        calls=f"{OUTDIR}/annotated/{{sample}}_mutect.vep.vcf.gz",
+        stats=f"{OUTDIR}/annotated/{{sample}}_mutect.vep.vcf.gz_summary.html"
     params:
-        get_vep_params()
-    conda:"../envs/vep.yaml"
+        plugins=f"{config['annotation']['vep']['plugins']}",
+        extra=f"{config['annotation']['vep']['extra']}"
+    log:
+        f"{LOGDIR}/vep/mutect_{{sample}}_vep.log"
     threads: get_resource("vep","threads")
     resources:
         mem_mb = get_resource("vep","mem"),
         runtime = get_resource("vep","walltime")
-    log:
-        f"{LOGDIR}/vep/mutect_{{sample}}_vep.log"
-    shell: """
-        vep -i {input} -o {output} --format 'vcf' --vcf --compress_output gzip --force_overwrite {params} --fork {threads}
-    """
+    wrapper:
+        "v3.5.0/bio/vep/annotate"

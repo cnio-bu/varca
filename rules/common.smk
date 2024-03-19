@@ -97,22 +97,11 @@ def get_recal_input(bai=False):
         return f
 
 def get_mutect_params(sample):
-    if config["processing"].get("restrict_regions"):
-        regions_call="-L "+config["processing"].get("restrict_regions")
-    else:
-        regions_call=""
     if samples.loc[(sample),"control"] != sample:
-        normal_call="-I "+get_merged_bam(samples.loc[(sample),"control"])[0]+" -normal "+samples.loc[(sample),"control"]
+        normal_call="-I "+get_merged_bam(samples.loc[(sample),"control"])[0]+" -normal "+samples.loc[(sample),"control"]+" "
     else:
-        normal_call=""
-    return regions_call,normal_call
-
-def get_vep_params():
-    cache=" ".join(["--cache",str(config["annotation"]["vep"]["cache_version"]),"--dir_cache",config["annotation"]["vep"]["cache_directory"],"--offline"]) if config["annotation"]["vep"]["cache"] else "--database"
-    assembly=" ".join(["--assembly",config["annotation"]["vep"]["assembly"]])
-    port="--port 3337" if config["annotation"]["vep"]["assembly"] == "GRCh37" else ""
-    ann=config["annotation"]["vep"]["annotations"]
-    return " ".join([cache, assembly, port, ann])
+        normal_call=" "
+    return normal_call
 
 def get_contig_file_name(contigfn):
     contig = re.sub("___","*",contigfn)

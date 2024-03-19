@@ -1,13 +1,17 @@
 if "restrict_regions" in config["processing"]:
     rule sort_bed:
         input:
-            config["processing"]["restrict_regions"]
+            in_file = config["processing"]["restrict_regions"]
         output:
             temp(f"{OUTDIR}/called/regions.sorted.bed")
-        conda:
-            "../envs/bedops.yaml"
-        shell:
-            "sort-bed {input} > {output}"
+        params:
+            extra = ""
+        resources:
+            threads = get_resource("sort_bed","threads"),
+            mem_mb = get_resource("sort_bed","mem"),
+            runtime = get_resource("sort_bed","walltime")
+        wrapper:
+            "v3.5.0/bio/bedtools/sort"
 
     rule compose_regions:
         input:
@@ -118,24 +122,21 @@ rule samtools_index_merged:
 
 rule mutect:
     input:
-        bam=lambda wc: get_merged_bam(wc.sample)[0],
+        map=lambda wc: get_merged_bam(wc.sample)[0],
         bai=lambda wc: get_merged_bam(wc.sample)[1],
         cbam=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[0],
         cbai=lambda wc: get_merged_bam(samples.loc[(wc.sample),"control"])[1],
-        ref=config["ref"]["genome"]
+        fasta=config["ref"]["genome"],
     output:
-        out=f"{OUTDIR}/mutect/{{sample}}.vcf.gz",
+        vcf=f"{OUTDIR}/mutect/{{sample}}.vcf.gz",
         f1r2=f"{OUTDIR}/mutect/{{sample}}.f1r2.tar.gz"
     params:
-        regions=lambda wc: get_mutect_params(wc.sample)[0],
-        normal=lambda wc: get_mutect_params(wc.sample)[1]
+        extra=lambda wc: get_mutect_params(wc.sample) + get_regions_param()
     threads: get_resource("mutect","threads")
     resources:
         mem_mb = get_resource("mutect","mem"),
         runtime = get_resource("mutect","walltime")
-    conda: "../envs/gatk.yaml"
     log:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"
-    shell:"""
-        gatk Mutect2 --callable-depth 1 --native-pair-hmm-threads 16 -R {input.ref} {params.regions} -I {input.bam} {params.normal} -O {output.out} --f1r2-tar-gz {output.f1r2}
-    """
+    wrapper:
+        "v3.5.0/bio/gatk/mutect"
