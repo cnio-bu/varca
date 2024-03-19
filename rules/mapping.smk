@@ -184,16 +184,15 @@ rule samtools_index_sorted:
 
 rule index_known_variants:
     input:
-        file=config['ref']['known_variants']
+        f"{config['ref']['known_variants']}"
     output:
-        index=f"{config['ref']['known_variants']}.tbi"
+        f"{config['ref']['known_variants']}.tbi"
+    params:
+        extra=""
     resources:
         mem_mb = get_resource("index_known_variants","mem"),
         runtime = get_resource("index_known_variants","walltime")
-    conda:
-        "../envs/gatk.yaml"
     log:
         f"{LOGDIR}/gatk/index_known_variants.log"
-    shell:"""
-        gatk IndexFeatureFile -I {input.file} -O {output.index}
-    """
+    wrapper:
+        "v3.5.0/bio/bcftools/index"

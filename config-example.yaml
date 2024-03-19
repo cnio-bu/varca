@@ -89,16 +89,17 @@ params:
 
 annotation:
   vep:
-    # If set to true, a cache directory must be created using the instructions of VEP. Using a cache allows for a fastest and most efficient way to use VEP
-    cache: true
-    #Indicate the version of the cache if cache is set to true. e.g. 100. This version must match the one indicated in the vep environment (vep.yaml). The version of vep.yaml can be modified according to the preferences, but version in cache and vep environment must be the same
+    #Indicate the version of the ensembl cache. e.g. 100.
     cache_version: 109
-    #Indicate the path to the cache files if cache is set to true
-    cache_directory: VEP/VEP100/.vep/
+    #Indicate the path to the cache files
+    cache_directory: VEP/VEP109
     #Indicate the assembly version of the reference genome
     assembly: GRCh38
-    #Indicate the annotations to include with the VEP execution and additional parameters. See the documentation (https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html) for additional details.
-    annotations: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris --fasta VEP/VEP109/homo_sapiens/109_GRCh38/Homo_sapiens.GRCh38.dna.toplevel.fa.gz"
+    #Indicate the species to annotate
+    species: homo_sapiens
+    #Indicate the annotations to include and plugins to use with the VEP execution, along with additional parameters according to your preferences. See the documentation (https://www.ensembl.org/info/docs/tools/vep/script/vep_options.html) for the details.
+    plugins: []
+    extra: "--sift b --polyphen b --ccds --uniprot --hgvs --symbol --numbers --domains --regulatory --canonical --protein --biotype --uniprot --tsl --af --variant_class --xref_refseq --af_1kg --af_esp --af_gnomad --appris --fasta GRCh38.primary_assembly.genome.fa"
 
 resources:
     default:
