@@ -12,6 +12,8 @@ rule trim_reads_se:
     resources:
         mem_mb = get_resource("trim_reads","mem"),
         runtime = get_resource("trim_reads","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.trim_reads_se.txt"
     wrapper:
         "v3.5.0/bio/trimmomatic/se"
 
@@ -33,6 +35,8 @@ rule trim_reads_pe:
     resources:
         mem_mb = get_resource("trim_reads","mem"),
         runtime = get_resource("trim_reads","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.trim_reads_pe.txt"
     wrapper:
         "v3.5.0/bio/trimmomatic/pe"
 
@@ -56,7 +60,7 @@ rule bwa_idx_genome:
     params:
         prefix=config['ref']['genome_idx']+os.path.basename(config['ref']['genome'])
     benchmark:
-        f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.bmk"
+        f"{LOGDIR}/benchmarks/bwa_idx_genome.txt"
     wrapper:
         "v3.5.0/bio/bwa-mem2/index"
 
@@ -78,6 +82,8 @@ rule map_reads:
     resources:
         mem_mb = get_resource("map_reads","mem"),
         runtime = get_resource("map_reads","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.map_reads.txt"
     wrapper:
         "v3.5.0/bio/bwa-mem2/mem"
 
@@ -89,12 +95,14 @@ rule mark_duplicates:
         metrics=f"{OUTDIR}/qc/dedup/{{sample}}-{{unit}}.metrics.txt"
     log:
         f"{LOGDIR}/picard/dedup/{{sample}}-{{unit}}.log"
+    params:
+        extra=config["params"]["picard"]["MarkDuplicates"]
     threads: get_resource("mark_duplicates","threads")
     resources:
         mem_mb = get_resource("mark_duplicates","mem"),
         runtime = get_resource("mark_duplicates","walltime")
-    params:
-        extra=config["params"]["picard"]["MarkDuplicates"]
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.mark_duplicates.txt"
     wrapper:
         "v3.5.0/bio/picard/markduplicates"
 
@@ -109,6 +117,8 @@ checkpoint genome_faidx:
     resources:
         mem_mb = get_resource("genome_faidx","mem"),
         runtime = get_resource("genome_faidx","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/genome_faidx.txt"
     wrapper:
         "v3.5.0/bio/samtools/faidx"
 
@@ -131,6 +141,8 @@ rule obtain_recal_table:
     resources:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
         runtime = get_resource("recalibrate_base_qualities","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.obtain_recal_table.txt"
     wrapper:
         "v3.5.0/bio/gatk/baserecalibrator"
 
@@ -151,6 +163,8 @@ rule recalibrate_base_qualities:
     resources:
         mem_mb = get_resource("recalibrate_base_qualities","mem"),
         runtime = get_resource("recalibrate_base_qualities","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.recalibrate_base_qualities.txt"
     wrapper:
         "v3.5.0/bio/gatk/applybqsr"
 
@@ -160,11 +174,13 @@ rule samtools_index:
     output:
         f"{OUTDIR}/dedup/{{sample}}-{{unit}}.bai"
     threads: get_resource("samtools_index","threads")
+    log:
+        f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     resources:
         mem_mb = get_resource("samtools_index","mem"),
         runtime = get_resource("samtools_index","walltime")
-    log:
-        f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.samtools_index.txt"
     wrapper:
         "v3.5.0/bio/samtools/index"
 
@@ -174,11 +190,13 @@ rule samtools_index_sorted:
     output:
         f"{OUTDIR}/mapped/{{sample}}-{{unit}}.sorted.bai"
     threads: get_resource("samtools_index","threads")
+    log:
+        f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     resources:
         mem_mb = get_resource("samtools_index","mem"),
         runtime = get_resource("samtools_index","walltime")
-    log:
-        f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.samtools_index_sorted.txt"
     wrapper:
         "v3.5.0/bio/samtools/index"
 
@@ -189,10 +207,12 @@ rule index_known_variants:
         f"{config['ref']['known_variants']}.tbi"
     params:
         extra=""
+    log:
+        f"{LOGDIR}/gatk/index_known_variants.log"
     resources:
         mem_mb = get_resource("index_known_variants","mem"),
         runtime = get_resource("index_known_variants","walltime")
-    log:
-        f"{LOGDIR}/gatk/index_known_variants.log"
+    benchmark:
+        f"{LOGDIR}/benchmarks/index_known_variants.txt"
     wrapper:
         "v3.5.0/bio/bcftools/index"

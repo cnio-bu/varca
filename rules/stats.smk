@@ -5,11 +5,13 @@ rule index_snpeff_file:
         f"{OUTDIR}/annotated/{{group}}.snpeff.vcf.gz.tbi"
     params:
         extra=""
+    log:
+        f"{LOGDIR}/gatk/{{group}}.index_snpeff_file.log"
     resources:
         mem_mb = get_resource("index_snpeff_file","mem"),
         runtime = get_resource("index_snpeff_file","walltime")
-    log:
-        f"{LOGDIR}/gatk/{{group}}.index_snpeff_file.log"
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.index_snpeff_file.txt"
     wrapper:
         "v3.5.0/bio/bcftools/index"
 
@@ -27,6 +29,8 @@ rule vcf_to_tsv:
     resources:
         mem_mb = get_resource("vcf_to_tsv","mem"),
         runtime = get_resource("vcf_to_tsv","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.vcf_to_tsv.txt"
     wrapper:
         "v3.5.0/bio/gatk/variantstotable"
 
@@ -43,6 +47,8 @@ rule compress_tsv:
     resources:
         mem_mb = get_resource("vcf_to_tsv","mem"),
         runtime = get_resource("vcf_to_tsv","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.compress_tsv.txt"
     wrapper:
         "v3.5.0/bio/bgzip"
 
@@ -58,5 +64,7 @@ rule plot_stats:
     resources:
         mem_mb = get_resource("plots_stats","mem"),
         runtime = get_resource("plots_stats","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.plot_stats.txt"
     script:
         "../scripts/plot-depths.py"

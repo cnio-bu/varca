@@ -8,6 +8,8 @@ rule snpeff_download:
     resources:
         mem_mb = get_resource("snpeff","mem"),
         runtime = get_resource("snpeff","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/snpeff_download.txt"
     wrapper:
         "v3.5.0/bio/snpeff/download"
 
@@ -28,6 +30,8 @@ rule snpeff:
         runtime = get_resource("snpeff","walltime")
     params:
         extra=""
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.snpeff.txt"
     wrapper:
         "v3.5.0/bio/snpeff/annotate"
 
@@ -44,6 +48,8 @@ rule get_vep_cache:
         threads = get_resource("get_vep_cache","threads"),
         mem_mb = get_resource("get_vep_cache","mem"),
         runtime = get_resource("get_vep_cache","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/get_vep_cache.tsv"
     wrapper:
         "v3.5.0/bio/vep/cache"
 
@@ -58,6 +64,8 @@ rule download_vep_plugins:
         threads = get_resource("download_vep_plugins","threads"),
         mem_mb = get_resource("download_vep_plugins","mem"),
         runtime = get_resource("download_vep_plugins","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/download_vep_plugin.tsv"
     wrapper:
         "v3.5.0/bio/vep/plugins"
 
@@ -78,6 +86,8 @@ rule vep_gatk:
     resources:
         mem_mb = get_resource("vep","mem"),
         runtime = get_resource("vep","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.vep_gatk.txt"
     wrapper:
         "v3.5.0/bio/vep/annotate"
 
@@ -98,5 +108,7 @@ rule vep_mutect:
     resources:
         mem_mb = get_resource("vep","mem"),
         runtime = get_resource("vep","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}.vep_mutect.txt"
     wrapper:
         "v3.5.0/bio/vep/annotate"
