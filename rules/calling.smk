@@ -10,6 +10,8 @@ if "restrict_regions" in config["processing"]:
             threads = get_resource("sort_bed","threads"),
             mem_mb = get_resource("sort_bed","mem"),
             runtime = get_resource("sort_bed","walltime")
+        benchmark:
+            f"{LOGDIR}/benchmarks/sort_bed.txt"
         wrapper:
             "v3.5.0/bio/bedtools/sort"
 
@@ -20,6 +22,8 @@ if "restrict_regions" in config["processing"]:
             f"{OUTDIR}/called/{{contig}}.regions.bed"
         params:
             contig = lambda wc: get_contig_file_name(wc.contig)
+        benchmark:
+            f"{LOGDIR}/benchmarks/{{contig}}.compose_regions.txt"
         conda:
             "../envs/bedops.yaml"
         shell:
@@ -41,6 +45,8 @@ rule call_variants:
         runtime = get_resource("call_variants","walltime")
     params:
         extra=get_call_variants_params
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}.{{contig}}.call_variants.txt"
     wrapper:
         "v3.5.0/bio/gatk/haplotypecaller"
 
@@ -57,6 +63,8 @@ rule combine_calls:
     resources:
         mem_mb = get_resource("combine_calls","mem"),
         runtime = get_resource("combine_calls","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.{{contig}}.combine_calls.txt"
     wrapper:
         "v3.5.0/bio/gatk/combinegvcfs"
 
@@ -75,6 +83,8 @@ rule genotype_variants:
     resources:
         mem_mb = get_resource("genotype_variants","mem"),
         runtime = get_resource("genotype_variants","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.{{contig}}.genotype_variants.txt"
     wrapper:
         "v3.5.0/bio/gatk/genotypegvcfs"
 
@@ -90,6 +100,8 @@ rule merge_variants:
     resources:
         mem_mb = get_resource("merge_variants","mem"),
         runtime = get_resource("merge_variants","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{group}}.merge_variants.txt"
     params:
         extra = ""
     wrapper:
@@ -103,6 +115,8 @@ rule merge_bams:
     resources:
         mem_mb = get_resource("merge_bams","mem"),
         runtime = get_resource("merge_bams","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}.merge_bams.txt"
     wrapper:
         "v3.5.0/bio/samtools/merge"
 
@@ -111,12 +125,14 @@ rule samtools_index_merged:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     output:
         f"{OUTDIR}/merged_bams/{{sample}}.bai"
+    log:
+        f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     threads: get_resource("samtools_index","threads")
     resources:
         mem_mb = get_resource("samtools_index","mem"),
         runtime = get_resource("samtools_index","walltime")
-    log:
-        f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}.samtools_index_merged.txt"
     wrapper:
         "v3.5.0/bio/samtools/index"
 
@@ -132,11 +148,13 @@ rule mutect:
         f1r2=f"{OUTDIR}/mutect/{{sample}}.f1r2.tar.gz"
     params:
         extra=lambda wc: get_mutect_params(wc.sample) + get_regions_param()
+    log:
+        f"{LOGDIR}/gatk/mutect.{{sample}}.log"
     threads: get_resource("mutect","threads")
     resources:
         mem_mb = get_resource("mutect","mem"),
         runtime = get_resource("mutect","walltime")
-    log:
-        f"{LOGDIR}/gatk/mutect.{{sample}}.log"
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}.mutect.txt"
     wrapper:
         "v3.5.0/bio/gatk/mutect"

@@ -8,6 +8,8 @@ rule fastqc:
     resources:
         mem_mb = get_resource("fastqc","mem"),
         runtime = get_resource("fastqc","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}-{{read}}.fastqc.txt"
     wrapper:
         "v3.5.0/bio/fastqc"
 
@@ -22,6 +24,8 @@ rule samtools_stats:
     resources:
         mem_mb = get_resource("samtools_stats","mem"),
         runtime = get_resource("samtools_stats","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.samtools_stats.txt"
     wrapper:
         "v3.5.0/bio/samtools/stats"
 
@@ -37,6 +41,8 @@ rule genome_dict:
     resources:
         mem_mb = get_resource("genome_dict","mem"),
         runtime = get_resource("genome_dict","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/genome_dict.txt"
     wrapper:
         "v3.5.0/bio/picard/createsequencedictionary"
 
@@ -49,11 +55,13 @@ if "restrict_regions" in config["processing"]:
             temp(f"{OUTDIR}/regions.intervals")
         log:
             f"{LOGDIR}/picard/bed_to_interval/bedtointervals.log"
+        params:
+            extra = ""
         resources:
             mem_mb =  get_resource("bed_to_interval","mem"),
             runtime = get_resource("bed_to_interval","walltime")
-        params:
-            extra = ""
+        benchmark:
+            f"{LOGDIR}/benchmarks/bed_to_interval.txt"
         wrapper:
             "v3.5.0/bio/picard/bedtointervallist"
 
@@ -67,12 +75,14 @@ if "restrict_regions" in config["processing"]:
             f"{OUTDIR}/qc/picard/{{sample}}-{{unit}}.txt"
         log:
             f"{LOGDIR}/picard_collect_hs_metrics/{{sample}}-{{unit}}.log"
+        params:
+            extra = ""
         threads: get_resource("picard_collect_hs_metrics","threads")
         resources:
             mem_mb = get_resource("picard_collect_hs_metrics","mem"),
             runtime = get_resource("picard_collect_hs_metrics","walltime")
-        params:
-            extra = ""
+        benchmark:
+            f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.picard_collect_hs_metrics.txt"
         wrapper:
             "v3.5.0/bio/picard/collecthsmetrics"
 
@@ -92,5 +102,7 @@ rule multiqc:
     resources:
         mem_mb = get_resource("multiqc","mem"),
         runtime = get_resource("multiqc","walltime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/multiqc.txt"
     wrapper:
         "v3.5.0/bio/multiqc"
