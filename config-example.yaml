@@ -12,7 +12,7 @@ ref:
   genome_idx: indexes/bwa_mem2/
   # If the reference genome contains alternative contigs, set 'genome_alt' to true to account for their presence in the alignment. The corresponding '.alt' index file should be present in the genome index directory with the same basename as the reference genome. For more details, please, visit https://github.com/lh3/bwa/blob/master/README-alt.md and https://gatk.broadinstitute.org/hc/en-us/articles/360037498992--How-to-Map-reads-to-a-reference-with-alternate-contigs-like-GRCH38.
   genome_alt: true
-  # Path to any database of known variants, ideally as it is provided by the GATK bundle.
+  # Path to any database of known variants, ideally as it is provided by the GATK bundle. This file has to be compressed in bgzip format.
   known_variants: /storage/scratch01/shared/databases/dbsnp/156/GCF_000001405.40_ucsc_chrnames.vcf.gz
 
 filtering:
