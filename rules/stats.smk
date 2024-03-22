@@ -8,6 +8,7 @@ rule index_snpeff_file:
     log:
         f"{LOGDIR}/gatk/{{group}}.index_snpeff_file.log"
     resources:
+        threads = get_resource("index_snpeff_file","threads"),
         mem_mb = get_resource("index_snpeff_file","mem"),
         runtime = get_resource("index_snpeff_file","walltime")
     benchmark:

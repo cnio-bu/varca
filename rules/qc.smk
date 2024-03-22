@@ -37,7 +37,8 @@ rule genome_dict:
         dict=re.sub("\.fa","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
     log:
         f"{LOGDIR}/picard/genome_dict/CreateSequenceDictionary.log"
-    threads: get_resource("genome_dict","threads")
+    params:
+        java_opts = "-XX:ParallelGCThreads={}".format(get_resource("genome_dict","threads"))
     resources:
         mem_mb = get_resource("genome_dict","mem"),
         runtime = get_resource("genome_dict","walltime")
@@ -56,7 +57,8 @@ if "restrict_regions" in config["processing"]:
         log:
             f"{LOGDIR}/picard/bed_to_interval/bedtointervals.log"
         params:
-            extra = ""
+            extra = "",
+            java_opts = "-XX:ParallelGCThreads={}".format(get_resource("bed_to_interval","threads"))
         resources:
             mem_mb =  get_resource("bed_to_interval","mem"),
             runtime = get_resource("bed_to_interval","walltime")
@@ -76,8 +78,8 @@ if "restrict_regions" in config["processing"]:
         log:
             f"{LOGDIR}/picard_collect_hs_metrics/{{sample}}-{{unit}}.log"
         params:
-            extra = ""
-        threads: get_resource("picard_collect_hs_metrics","threads")
+            extra = "",
+            java_opts = "-XX:ParallelGCThreads={}".format(get_resource("picard_collect_hs_metrics","threads"))
         resources:
             mem_mb = get_resource("picard_collect_hs_metrics","mem"),
             runtime = get_resource("picard_collect_hs_metrics","walltime")

@@ -22,6 +22,10 @@ if "restrict_regions" in config["processing"]:
             f"{OUTDIR}/called/{{contig}}.regions.bed"
         params:
             contig = lambda wc: get_contig_file_name(wc.contig)
+        resources:
+            threads = get_resource("compose_regions","threads"),
+            mem_mb = get_resource("compose_regions","mem"),
+            runtime = get_resource("compose_regions","walltime")
         benchmark:
             f"{LOGDIR}/benchmarks/{{contig}}.compose_regions.txt"
         conda:
@@ -59,7 +63,8 @@ rule combine_calls:
         gvcf=f"{OUTDIR}/called/{{group}}.{{contig}}.g.vcf.gz"
     log:
         f"{LOGDIR}/gatk/combinegvcfs.{{group}}.{{contig}}.log"
-    threads: get_resource("combine_calls","threads")
+    params:
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("combine_calls","threads"))
     resources:
         mem_mb = get_resource("combine_calls","mem"),
         runtime = get_resource("combine_calls","walltime")
@@ -76,10 +81,10 @@ rule genotype_variants:
     output:
         vcf=temp(f"{OUTDIR}/genotyped/{{group}}.{{contig}}.vcf.gz")
     params:
-        extra=config["params"]["gatk"]["GenotypeGVCFs"]
+        extra=config["params"]["gatk"]["GenotypeGVCFs"],
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("genotype_variants","threads"))
     log:
         f"{LOGDIR}/gatk/genotypegvcfs.{{group}}.{{contig}}.log"
-    threads: get_resource("genotype_variants","threads")
     resources:
         mem_mb = get_resource("genotype_variants","mem"),
         runtime = get_resource("genotype_variants","walltime")
@@ -96,14 +101,14 @@ rule merge_variants:
         vcf=f"{OUTDIR}/genotyped/{{group}}.vcf.gz"
     log:
         f"{LOGDIR}/picard/{{group}}.merge-genotyped.log"
-    threads: get_resource("merge_variants","threads")
+    params:
+        extra = "",
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("merge_variants","threads"))
     resources:
         mem_mb = get_resource("merge_variants","mem"),
         runtime = get_resource("merge_variants","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.merge_variants.txt"
-    params:
-        extra = ""
     wrapper:
         "v3.5.0/bio/picard/mergevcfs"
 
