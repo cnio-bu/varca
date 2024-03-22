@@ -15,8 +15,8 @@ rule select_calls:
     log:
         f"{LOGDIR}/gatk/selectvariants/{{group}}.{{vartype}}.log"
     resources:
-        mem_mb = get_resource("select_calls","mem"),
-        runtime = get_resource("select_calls","walltime")
+        mem_mb = get_resource("select_calls","mem_mb"),
+        runtime = get_resource("select_calls","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.{{vartype}}.select_calls.txt"
     wrapper:
@@ -41,8 +41,8 @@ rule hard_filter_calls:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{group}}.{{vartype}}.log"
     resources:
-        mem_mb = get_resource("hard_filter_calls","mem"),
-        runtime = get_resource("hard_filter_calls","walltime")
+        mem_mb = get_resource("hard_filter_calls","mem_mb"),
+        runtime = get_resource("hard_filter_calls","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.{{vartype}}.hard_filter_calls.txt"
     wrapper:
@@ -72,8 +72,8 @@ rule recalibrate_calls:
     log:
         f"{LOGDIR}/gatk/variantrecalibrator/{{group}}.{{vartype}}.log"
     resources:
-        mem_mb = get_resource("recalibrate_calls","mem"),
-        runtime = get_resource("recalibrate_calls","walltime")
+        mem_mb = get_resource("recalibrate_calls","mem_mb"),
+        runtime = get_resource("recalibrate_calls","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.{{vartype}}.recalibrate_calls.txt"
     wrapper:
@@ -94,8 +94,8 @@ rule merge_calls:
     log:
         f"{LOGDIR}/picard/{{group}}.merge-filtered.log"
     resources:
-        mem_mb = get_resource("merge_calls","mem"),
-        runtime = get_resource("merge_calls","walltime")
+        mem_mb = get_resource("merge_calls","mem_mb"),
+        runtime = get_resource("merge_calls","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.merge_calls.txt"
     wrapper:
@@ -112,8 +112,8 @@ rule learn_read_orientation_model:
         extra="",
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("learn_read_orientation_model", "threads"))
     resources:
-        mem_mb = get_resource("learn_read_orientation_model","mem"),
-        runtime = get_resource("learn_read_orientation_model","walltime")
+        mem_mb = get_resource("learn_read_orientation_model","mem_mb"),
+        runtime = get_resource("learn_read_orientation_model","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.learn_read_orientation_model.txt"
     wrapper:
@@ -132,8 +132,8 @@ rule filter_mutect_calls:
     log:
         f"{LOGDIR}/gatk/mutect_filter.{{sample}}.log"
     resources:
-        mem_mb = get_resource("filter_mutect_calls","mem"),
-        runtime = get_resource("filter_mutect_calls","walltime")
+        mem_mb = get_resource("filter_mutect_calls","mem_mb"),
+        runtime = get_resource("filter_mutect_calls","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.filter_mutect_calls.txt"
     wrapper:
@@ -151,8 +151,8 @@ rule filter_mutect_2:
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
     resources:
-        mem_mb = get_resource("filter_mutect_2","mem"),
-        runtime = get_resource("filter_mutect_2","walltime")
+        mem_mb = get_resource("filter_mutect_2","mem_mb"),
+        runtime = get_resource("filter_mutect_2","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.filter_mutect_2.txt"
     wrapper:

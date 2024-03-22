@@ -6,8 +6,8 @@ rule fastqc:
         zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_fastqc.zip"
     threads: get_resource("fastqc","threads")
     resources:
-        mem_mb = get_resource("fastqc","mem"),
-        runtime = get_resource("fastqc","walltime")
+        mem_mb = get_resource("fastqc","mem_mb"),
+        runtime = get_resource("fastqc","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}-{{read}}.fastqc.txt"
     wrapper:
@@ -22,8 +22,8 @@ rule samtools_stats:
         f"{LOGDIR}/samtools-stats/{{sample}}-{{unit}}.log"
     threads: get_resource("samtools_stats","threads")
     resources:
-        mem_mb = get_resource("samtools_stats","mem"),
-        runtime = get_resource("samtools_stats","walltime")
+        mem_mb = get_resource("samtools_stats","mem_mb"),
+        runtime = get_resource("samtools_stats","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.samtools_stats.txt"
     wrapper:
@@ -40,8 +40,8 @@ rule genome_dict:
     params:
         java_opts = "-XX:ParallelGCThreads={}".format(get_resource("genome_dict","threads"))
     resources:
-        mem_mb = get_resource("genome_dict","mem"),
-        runtime = get_resource("genome_dict","walltime")
+        mem_mb = get_resource("genome_dict","mem_mb"),
+        runtime = get_resource("genome_dict","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/genome_dict.txt"
     wrapper:
@@ -60,8 +60,8 @@ if "restrict_regions" in config["processing"]:
             extra = "",
             java_opts = "-XX:ParallelGCThreads={}".format(get_resource("bed_to_interval","threads"))
         resources:
-            mem_mb =  get_resource("bed_to_interval","mem"),
-            runtime = get_resource("bed_to_interval","walltime")
+            mem_mb =  get_resource("bed_to_interval","mem_mb"),
+            runtime = get_resource("bed_to_interval","runtime")
         benchmark:
             f"{LOGDIR}/benchmarks/bed_to_interval.txt"
         wrapper:
@@ -81,8 +81,8 @@ if "restrict_regions" in config["processing"]:
             extra = "",
             java_opts = "-XX:ParallelGCThreads={}".format(get_resource("picard_collect_hs_metrics","threads"))
         resources:
-            mem_mb = get_resource("picard_collect_hs_metrics","mem"),
-            runtime = get_resource("picard_collect_hs_metrics","walltime")
+            mem_mb = get_resource("picard_collect_hs_metrics","mem_mb"),
+            runtime = get_resource("picard_collect_hs_metrics","runtime")
         benchmark:
             f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.picard_collect_hs_metrics.txt"
         wrapper:
@@ -102,8 +102,8 @@ rule multiqc:
         f"{LOGDIR}/multiqc.log"
     threads: get_resource("multiqc","threads")
     resources:
-        mem_mb = get_resource("multiqc","mem"),
-        runtime = get_resource("multiqc","walltime")
+        mem_mb = get_resource("multiqc","mem_mb"),
+        runtime = get_resource("multiqc","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/multiqc.txt"
     wrapper:

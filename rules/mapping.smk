@@ -10,8 +10,8 @@ rule trim_reads_se:
         f"{LOGDIR}/trimmomatic/{{sample}}-{{unit}}.log"
     threads: get_resource("trim_reads","threads")
     resources:
-        mem_mb = get_resource("trim_reads","mem"),
-        runtime = get_resource("trim_reads","walltime")
+        mem_mb = get_resource("trim_reads","mem_mb"),
+        runtime = get_resource("trim_reads","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.trim_reads_se.txt"
     wrapper:
@@ -33,8 +33,8 @@ rule trim_reads_pe:
         f"{LOGDIR}/trimmomatic/{{sample}}-{{unit}}.log"
     threads: get_resource("trim_reads","threads")
     resources:
-        mem_mb = get_resource("trim_reads","mem"),
-        runtime = get_resource("trim_reads","walltime")
+        mem_mb = get_resource("trim_reads","mem_mb"),
+        runtime = get_resource("trim_reads","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.trim_reads_pe.txt"
     wrapper:
@@ -53,8 +53,8 @@ rule bwa_idx_genome:
         f"{config['ref']['genome_idx']}"+os.path.basename(config['ref']['genome'])+".pac"
     threads: get_resource("bwa_idx_genome","threads")
     resources:
-        mem_mb = get_resource("bwa_idx_genome","mem"),
-        runtime = get_resource("bwa_idx_genome","walltime")
+        mem_mb = get_resource("bwa_idx_genome","mem_mb"),
+        runtime = get_resource("bwa_idx_genome","runtime")
     log:
         f"{LOGDIR}/bwa_idx_genome/bwa_idx_genome.log"
     params:
@@ -80,8 +80,8 @@ rule map_reads:
     shadow: "shallow"
     threads: get_resource("map_reads","threads")
     resources:
-        mem_mb = get_resource("map_reads","mem"),
-        runtime = get_resource("map_reads","walltime")
+        mem_mb = get_resource("map_reads","mem_mb"),
+        runtime = get_resource("map_reads","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.map_reads.txt"
     wrapper:
@@ -99,8 +99,8 @@ rule mark_duplicates:
         extra=config["params"]["picard"]["MarkDuplicates"],
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("mark_duplicates","threads"))
     resources:
-        mem_mb = get_resource("mark_duplicates","mem"),
-        runtime = get_resource("mark_duplicates","walltime")
+        mem_mb = get_resource("mark_duplicates","mem_mb"),
+        runtime = get_resource("mark_duplicates","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.mark_duplicates.txt"
     wrapper:
@@ -115,8 +115,8 @@ checkpoint genome_faidx:
         f"{LOGDIR}/genome_faidx/genome_faidx.log"
     threads: get_resource("genome_faidx","threads")
     resources:
-        mem_mb = get_resource("genome_faidx","mem"),
-        runtime = get_resource("genome_faidx","walltime")
+        mem_mb = get_resource("genome_faidx","mem_mb"),
+        runtime = get_resource("genome_faidx","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/genome_faidx.txt"
     wrapper:
@@ -139,8 +139,8 @@ rule obtain_recal_table:
     log:
         f"{LOGDIR}/gatk/bqsr/{{sample}}-{{unit}}.log"
     resources:
-        mem_mb = get_resource("obtain_recal_table","mem"),
-        runtime = get_resource("obtain_recal_table","walltime")
+        mem_mb = get_resource("obtain_recal_table","mem_mb"),
+        runtime = get_resource("obtain_recal_table","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.obtain_recal_table.txt"
     wrapper:
@@ -162,8 +162,8 @@ rule recalibrate_base_qualities:
     log:
         f"{LOGDIR}/gatk/gatk_applybqsr/{{sample}}-{{unit}}.log"
     resources:
-        mem_mb = get_resource("recalibrate_base_qualities","mem"),
-        runtime = get_resource("recalibrate_base_qualities","walltime")
+        mem_mb = get_resource("recalibrate_base_qualities","mem_mb"),
+        runtime = get_resource("recalibrate_base_qualities","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.recalibrate_base_qualities.txt"
     wrapper:
@@ -178,8 +178,8 @@ rule samtools_index:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     resources:
-        mem_mb = get_resource("samtools_index","mem"),
-        runtime = get_resource("samtools_index","walltime")
+        mem_mb = get_resource("samtools_index","mem_mb"),
+        runtime = get_resource("samtools_index","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.samtools_index.txt"
     wrapper:
@@ -194,8 +194,8 @@ rule samtools_index_sorted:
     log:
         f"{LOGDIR}/samtools/index/{{sample}}-{{unit}}.log"
     resources:
-        mem_mb = get_resource("samtools_index","mem"),
-        runtime = get_resource("samtools_index","walltime")
+        mem_mb = get_resource("samtools_index","mem_mb"),
+        runtime = get_resource("samtools_index","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.samtools_index_sorted.txt"
     wrapper:
@@ -212,8 +212,8 @@ rule index_known_variants:
         f"{LOGDIR}/gatk/index_known_variants.log"
     resources:
         threads = get_resource("index_known_variants","threads"),
-        mem_mb = get_resource("index_known_variants","mem"),
-        runtime = get_resource("index_known_variants","walltime")
+        mem_mb = get_resource("index_known_variants","mem_mb"),
+        runtime = get_resource("index_known_variants","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/index_known_variants.txt"
     wrapper:

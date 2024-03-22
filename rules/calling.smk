@@ -8,8 +8,8 @@ if "restrict_regions" in config["processing"]:
             extra = ""
         resources:
             threads = get_resource("sort_bed","threads"),
-            mem_mb = get_resource("sort_bed","mem"),
-            runtime = get_resource("sort_bed","walltime")
+            mem_mb = get_resource("sort_bed","mem_mb"),
+            runtime = get_resource("sort_bed","runtime")
         benchmark:
             f"{LOGDIR}/benchmarks/sort_bed.txt"
         wrapper:
@@ -24,8 +24,8 @@ if "restrict_regions" in config["processing"]:
             contig = lambda wc: get_contig_file_name(wc.contig)
         resources:
             threads = get_resource("compose_regions","threads"),
-            mem_mb = get_resource("compose_regions","mem"),
-            runtime = get_resource("compose_regions","walltime")
+            mem_mb = get_resource("compose_regions","mem_mb"),
+            runtime = get_resource("compose_regions","runtime")
         benchmark:
             f"{LOGDIR}/benchmarks/{{contig}}.compose_regions.txt"
         conda:
@@ -45,8 +45,8 @@ rule call_variants:
         f"{LOGDIR}/gatk/haplotypecaller/{{sample}}.{{contig}}.log"
     threads: get_resource("call_variants","threads")
     resources:
-        mem_mb = get_resource("call_variants","mem"),
-        runtime = get_resource("call_variants","walltime")
+        mem_mb = get_resource("call_variants","mem_mb"),
+        runtime = get_resource("call_variants","runtime")
     params:
         extra=get_call_variants_params
     benchmark:
@@ -66,8 +66,8 @@ rule combine_calls:
     params:
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("combine_calls","threads"))
     resources:
-        mem_mb = get_resource("combine_calls","mem"),
-        runtime = get_resource("combine_calls","walltime")
+        mem_mb = get_resource("combine_calls","mem_mb"),
+        runtime = get_resource("combine_calls","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.{{contig}}.combine_calls.txt"
     wrapper:
@@ -86,8 +86,8 @@ rule genotype_variants:
     log:
         f"{LOGDIR}/gatk/genotypegvcfs.{{group}}.{{contig}}.log"
     resources:
-        mem_mb = get_resource("genotype_variants","mem"),
-        runtime = get_resource("genotype_variants","walltime")
+        mem_mb = get_resource("genotype_variants","mem_mb"),
+        runtime = get_resource("genotype_variants","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.{{contig}}.genotype_variants.txt"
     wrapper:
@@ -105,8 +105,8 @@ rule merge_variants:
         extra = "",
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("merge_variants","threads"))
     resources:
-        mem_mb = get_resource("merge_variants","mem"),
-        runtime = get_resource("merge_variants","walltime")
+        mem_mb = get_resource("merge_variants","mem_mb"),
+        runtime = get_resource("merge_variants","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.merge_variants.txt"
     wrapper:
@@ -118,8 +118,8 @@ rule merge_bams:
         f"{OUTDIR}/merged_bams/{{sample}}.bam"
     threads: get_resource("merge_bams","threads")
     resources:
-        mem_mb = get_resource("merge_bams","mem"),
-        runtime = get_resource("merge_bams","walltime")
+        mem_mb = get_resource("merge_bams","mem_mb"),
+        runtime = get_resource("merge_bams","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.merge_bams.txt"
     wrapper:
@@ -134,8 +134,8 @@ rule samtools_index_merged:
         f"{LOGDIR}/samtools/index_merged/{{sample}}.log"
     threads: get_resource("samtools_index","threads")
     resources:
-        mem_mb = get_resource("samtools_index","mem"),
-        runtime = get_resource("samtools_index","walltime")
+        mem_mb = get_resource("samtools_index","mem_mb"),
+        runtime = get_resource("samtools_index","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.samtools_index_merged.txt"
     wrapper:
@@ -157,8 +157,8 @@ rule mutect:
         f"{LOGDIR}/gatk/mutect.{{sample}}.log"
     threads: get_resource("mutect","threads")
     resources:
-        mem_mb = get_resource("mutect","mem"),
-        runtime = get_resource("mutect","walltime")
+        mem_mb = get_resource("mutect","mem_mb"),
+        runtime = get_resource("mutect","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.mutect.txt"
     wrapper:
