@@ -7,8 +7,8 @@ rule snpeff_download:
         reference=f"{config['ref']['name']}"
     resources:
         threads = get_resource("snpeff_download","threads"),
-        mem_mb = get_resource("snpeff_download","mem"),
-        runtime = get_resource("snpeff_download","walltime")
+        mem_mb = get_resource("snpeff_download","mem_mb"),
+        runtime = get_resource("snpeff_download","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/snpeff_download.txt"
     wrapper:
@@ -26,8 +26,8 @@ rule snpeff:
     log:
         f"{LOGDIR}/snpeff/{{group}}.snpeff.log"
     resources:
-        mem_mb = get_resource("snpeff","mem"),
-        runtime = get_resource("snpeff","walltime")
+        mem_mb = get_resource("snpeff","mem_mb"),
+        runtime = get_resource("snpeff","runtime")
     params:
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("snpeff","threads")),
         extra=""
@@ -47,8 +47,8 @@ rule get_vep_cache:
         f"{LOGDIR}/vep/get_vep_cache.log"
     resources:
         threads = get_resource("get_vep_cache","threads"),
-        mem_mb = get_resource("get_vep_cache","mem"),
-        runtime = get_resource("get_vep_cache","walltime")
+        mem_mb = get_resource("get_vep_cache","mem_mb"),
+        runtime = get_resource("get_vep_cache","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/get_vep_cache.tsv"
     wrapper:
@@ -63,8 +63,8 @@ rule download_vep_plugins:
         f"{LOGDIR}/vep/download_vep_plugins.log"
     resources:
         threads = get_resource("download_vep_plugins","threads"),
-        mem_mb = get_resource("download_vep_plugins","mem"),
-        runtime = get_resource("download_vep_plugins","walltime")
+        mem_mb = get_resource("download_vep_plugins","mem_mb"),
+        runtime = get_resource("download_vep_plugins","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/download_vep_plugin.tsv"
     wrapper:
@@ -85,8 +85,8 @@ rule vep_gatk:
         f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
     threads: get_resource("vep_gatk","threads")
     resources:
-        mem_mb = get_resource("vep_gatk","mem"),
-        runtime = get_resource("vep_gatk","walltime")
+        mem_mb = get_resource("vep_gatk","mem_mb"),
+        runtime = get_resource("vep_gatk","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.vep_gatk.txt"
     wrapper:
@@ -107,8 +107,8 @@ rule vep_mutect:
         f"{LOGDIR}/vep/mutect_{{sample}}_vep.log"
     threads: get_resource("vep_mutect","threads")
     resources:
-        mem_mb = get_resource("vep_mutect","mem"),
-        runtime = get_resource("vep_mutect","walltime")
+        mem_mb = get_resource("vep_mutect","mem_mb"),
+        runtime = get_resource("vep_mutect","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.vep_mutect.txt"
     wrapper:

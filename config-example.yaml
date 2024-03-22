@@ -104,55 +104,61 @@ annotation:
 resources:
     default:
         threads: 1
-        mem: 32000
-        walltime: 720
+        mem_mb: 32000
+        runtime: 720
     snpeff:
-        mem: 8000
+        mem_mb: 8000
         threads: 1
-        walltime: 480
+        runtime: 480
     call_variants:
-        mem: 10000
+        mem_mb: 10000
         threads: 4
-        walltime: 480
+        runtime: 480
     combine_calls:
-        mem: 8000
+        mem_mb: 8000
         threads: 1
-        walltime: 480
+        runtime: 480
     recalibrate_calls:
-        mem: 8000
-        walltime: 480
+        mem_mb: 8000
+        threads: 1
+        runtime: 480
     hard_filter_calls:
-        mem: 8000
-        walltime: 480
+        mem_mb: 8000
+        threads: 1
+        runtime: 480
     trim_reads:
-        mem: 4000
+        mem_mb: 4000
         threads: 16
-        walltime: 480
+        runtime: 480
     map_reads:
-        mem: 32000
+        mem_mb: 32000
         threads: 8
-        walltime: 480
+        runtime: 480
     recalibrate_base_qualities:
-        mem: 4000
-        walltime: 720
+        mem_mb: 4000
+        threads: 1
+        runtime: 720
     mark_duplicates:
-        mem: 32000
-        walltime: 480
+        mem_mb: 32000
+        threads: 1
+        runtime: 480
     vep_gatk:
-        mem: 32000
+        mem_mb: 32000
         threads: 4
-        walltime: 1440
+        runtime: 1440
     vep_mutect:
-        mem: 32000
+        mem_mb: 32000
         threads: 4
-        walltime: 1440
+        runtime: 1440
     mutect:
-        mem: 32000
+        mem_mb: 32000
         threads: 32
-        walltime: 1440
+        runtime: 1440
     bwa_idx_genome:
-        mem: 120000
-        walltime: 1440
+        mem_mb: 120000
+        threads: 1
+        runtime: 1440
     fastqc:
-        mem: 4000
-        walltime: 30
+        mem_mb: 4000
+        threads: 1
+        runtime: 30

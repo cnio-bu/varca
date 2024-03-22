@@ -9,8 +9,8 @@ rule index_snpeff_file:
         f"{LOGDIR}/gatk/{{group}}.index_snpeff_file.log"
     resources:
         threads = get_resource("index_snpeff_file","threads"),
-        mem_mb = get_resource("index_snpeff_file","mem"),
-        runtime = get_resource("index_snpeff_file","walltime")
+        mem_mb = get_resource("index_snpeff_file","mem_mb"),
+        runtime = get_resource("index_snpeff_file","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.index_snpeff_file.txt"
     wrapper:
@@ -28,8 +28,8 @@ rule vcf_to_tsv:
         extra="-F CHROM -F POS -F REF -F ALT -F QUAL -F ANN -GF GT -GF DP -GF AD",
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("vcf_to_tsv","threads"))
     resources:
-        mem_mb = get_resource("vcf_to_tsv","mem"),
-        runtime = get_resource("vcf_to_tsv","walltime")
+        mem_mb = get_resource("vcf_to_tsv","mem_mb"),
+        runtime = get_resource("vcf_to_tsv","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.vcf_to_tsv.txt"
     wrapper:
@@ -46,8 +46,8 @@ rule compress_tsv:
         extra=""
     threads: get_resource("vcf_to_tsv","threads")
     resources:
-        mem_mb = get_resource("vcf_to_tsv","mem"),
-        runtime = get_resource("vcf_to_tsv","walltime")
+        mem_mb = get_resource("vcf_to_tsv","mem_mb"),
+        runtime = get_resource("vcf_to_tsv","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.compress_tsv.txt"
     wrapper:
@@ -63,8 +63,8 @@ rule plot_stats:
         "../envs/stats.yaml"
     threads: get_resource("plot_stats","threads")
     resources:
-        mem_mb = get_resource("plots_stats","mem"),
-        runtime = get_resource("plots_stats","walltime")
+        mem_mb = get_resource("plots_stats","mem_mb"),
+        runtime = get_resource("plots_stats","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.plot_stats.txt"
     script:
