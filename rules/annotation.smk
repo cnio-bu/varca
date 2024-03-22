@@ -1,10 +1,10 @@
 rule snpeff_download:
     output:
-        directory(f"resources/snpeff/{config['ref']['name']}")
+        directory(f"{config['annotation']['snpeff']['cache_directory']}/{config['annotation']['snpeff']['database']}")
     log:
-        f"{LOGDIR}/snpeff/download/{config['ref']['name']}.log"
+        f"{LOGDIR}/snpeff/download/snpeff_download.log"
     params:
-        reference=f"{config['ref']['name']}"
+        reference=f"{config['annotation']['snpeff']['database']}"
     resources:
         threads = get_resource("snpeff_download","threads"),
         mem_mb = get_resource("snpeff_download","mem_mb"),
@@ -17,7 +17,7 @@ rule snpeff_download:
 rule snpeff:
     input:
         calls = f"{OUTDIR}/filtered/{{group}}.vcf.gz",
-        db = f"resources/snpeff/{config['ref']['name']}"
+        db = f"{config['annotation']['snpeff']['cache_directory']}/{config['annotation']['snpeff']['database']}"
     output:
         calls=report(f"{OUTDIR}/annotated/{{group}}.snpeff.vcf.gz",
         caption="../report/vcf.rst", category="Calls"),
@@ -25,12 +25,12 @@ rule snpeff:
         stats="snpeff/{{group}}.html"
     log:
         f"{LOGDIR}/snpeff/{{group}}.snpeff.log"
-    resources:
-        mem_mb = get_resource("snpeff","mem_mb"),
-        runtime = get_resource("snpeff","runtime")
     params:
         java_opts="-XX:ParallelGCThreads={}".format(get_resource("snpeff","threads")),
         extra=""
+    resources:
+        mem_mb = get_resource("snpeff","mem_mb"),
+        runtime = get_resource("snpeff","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.snpeff.txt"
     wrapper:

@@ -6,8 +6,6 @@ outdir: "out"
 logdir: "log"
 
 ref:
-  # Genome database of snpeff to be used in the annotation with this resource. Available databases can be checked with java -jar snpEff.jar databases
-  name: GRCh38.105
   # Path to the reference genome, ideally as it is provided by the GATK bundle.
   genome: GRCh38.primary_assembly.genome.fa.gz
   # Path to the directory with the reference indexes for the aligment. Indexes will be retrieve from this directory or created in it if they do not exist
@@ -88,10 +86,15 @@ params:
         - "MINLEN:36"
 
 annotation:
+  snpeff:
+    #Genome database of SnpEff to be used in the annotation with this resource. Available databases can be checked with java -jar snpEff.jar databases
+    database: GRCh38.105
+    #Indicate the path to the cache files. Files will be accessed from this directory or downloaded in it if they do not exist
+    cache_directory: resources/snpeff
   vep:
     #Indicate the version of the ensembl cache. e.g. 100.
     cache_version: 109
-    #Indicate the path to the cache files
+    #Indicate the path to the cache and plugin files. Files will be accessed from this directory or downloaded in it if they do not exist
     cache_directory: VEP/VEP109
     #Indicate the assembly version of the reference genome
     assembly: GRCh38
