@@ -34,7 +34,7 @@ rule genome_dict:
         genome=config["ref"]["genome"],
         fai=f"{config['ref']['genome']}.fai"
     output:
-        dict=re.sub("\.fa","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
+        dict=re.sub(r"\.fa","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
     log:
         f"{LOGDIR}/picard/genome_dict/CreateSequenceDictionary.log"
     params:
@@ -51,7 +51,7 @@ if "restrict_regions" in config["processing"]:
     rule bed_to_interval:
         input:
             bed=config["processing"]["restrict_regions"],
-            dict=re.sub("\.fa.*","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
+            dict=re.sub(r"\.fa.*","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict"
         output:
             temp(f"{OUTDIR}/regions.intervals")
         log:
