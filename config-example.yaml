@@ -108,6 +108,7 @@ resources:
         walltime: 720
     snpeff:
         mem: 8000
+        threads: 1
         walltime: 480
     call_variants:
         mem: 10000
@@ -137,7 +138,11 @@ resources:
     mark_duplicates:
         mem: 32000
         walltime: 480
-    vep:
+    vep_gatk:
+        mem: 32000
+        threads: 4
+        walltime: 1440
+    vep_mutect:
         mem: 32000
         threads: 4
         walltime: 1440

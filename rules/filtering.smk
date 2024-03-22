@@ -10,10 +10,10 @@ rule select_calls:
     output:
         vcf=temp(f"{OUTDIR}/filtered/{{group}}.{{vartype}}.vcf.gz")
     params:
-        extra=get_vartype_arg
+        extra=get_vartype_arg,
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("select_calls","threads"))
     log:
         f"{LOGDIR}/gatk/selectvariants/{{group}}.{{vartype}}.log"
-    threads: get_resource("select_calls","threads")
     resources:
         mem_mb = get_resource("select_calls","mem"),
         runtime = get_resource("select_calls","walltime")
@@ -36,10 +36,10 @@ rule hard_filter_calls:
     output:
         vcf=temp(f"{OUTDIR}/filtered/{{group}}.{{vartype}}.hardfiltered.vcf.gz")
     params:
-        filters=get_filter
+        filters=get_filter,
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("hard_filter_calls","threads"))
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{group}}.{{vartype}}.log"
-    threads: get_resource("hard_filter_calls","threads")
     resources:
         mem_mb = get_resource("hard_filter_calls","mem"),
         runtime = get_resource("hard_filter_calls","walltime")
@@ -67,10 +67,10 @@ rule recalibrate_calls:
                 else "INDEL",
         resources=config["params"]["gatk"]["VariantRecalibrator"]["parameters"],
         annotation=config["params"]["gatk"]["VariantRecalibrator"]["annotation"],
-        extra=config["params"]["gatk"]["VariantRecalibrator"]["extra"]
+        extra=config["params"]["gatk"]["VariantRecalibrator"]["extra"],
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("recalibrate_calls","threads"))
     log:
         f"{LOGDIR}/gatk/variantrecalibrator/{{group}}.{{vartype}}.log"
-    threads: get_resource("recalibrate_calls","threads")
     resources:
         mem_mb = get_resource("recalibrate_calls","mem"),
         runtime = get_resource("recalibrate_calls","walltime")
@@ -89,10 +89,10 @@ rule merge_calls:
     output:
         vcf=f"{OUTDIR}/filtered/{{group}}.vcf.gz"
     params:
-        extra = ""
+        extra = "",
+        java_opts = "-XX:ParallelGCThreads={}".format(get_resource("merge_calls","threads"))
     log:
         f"{LOGDIR}/picard/{{group}}.merge-filtered.log"
-    threads: get_resource("merge_calls","threads")
     resources:
         mem_mb = get_resource("merge_calls","mem"),
         runtime = get_resource("merge_calls","walltime")
@@ -108,7 +108,9 @@ rule learn_read_orientation_model:
         rom=f"{OUTDIR}/mutect/{{sample}}_read_orientation_model.tar.gz"
     log:
         f"{LOGDIR}/gatk/read_orientation_model.{{sample}}.log"
-    threads: get_resource("learn_read_orientation_model", "threads")
+    params:
+        extra="",
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("learn_read_orientation_model", "threads"))
     resources:
         mem_mb = get_resource("learn_read_orientation_model","mem"),
         runtime = get_resource("learn_read_orientation_model","walltime")
@@ -125,13 +127,13 @@ rule filter_mutect_calls:
     output:
         vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlabel.vcf.gz"
     params:
-        extra=config["params"]["gatk"]["mutect"]
+        extra=config["params"]["gatk"]["mutect"],
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("filter_mutect_calls", "threads"))
     log:
         f"{LOGDIR}/gatk/mutect_filter.{{sample}}.log"
-    threads: get_resource("mutect_filter", "threads")
     resources:
-        mem_mb = get_resource("mutect_filter","mem"),
-        runtime = get_resource("mutect_filter","walltime")
+        mem_mb = get_resource("filter_mutect_calls","mem"),
+        runtime = get_resource("filter_mutect_calls","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.filter_mutect_calls.txt"
     wrapper:
@@ -144,13 +146,13 @@ rule filter_mutect_2:
     output:
         vcf=f"{OUTDIR}/mutect_filter/{{sample}}_passlabel_filtered.vcf.gz"
     params:
-        filters={"DPfilter": config["filtering"]["mutect"]["depth"]}
+        filters={"DPfilter": config["filtering"]["mutect"]["depth"]},
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("filter_mutect_2","threads"))
     log:
         f"{LOGDIR}/gatk/variantfiltration/{{sample}}_mutect.log"
-    threads: get_resource("hard_filter_calls","threads")
     resources:
-        mem_mb = get_resource("hard_filter_calls","mem"),
-        runtime = get_resource("hard_filter_calls","walltime")
+        mem_mb = get_resource("filter_mutect_2","mem"),
+        runtime = get_resource("filter_mutect_2","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.filter_mutect_2.txt"
     wrapper:

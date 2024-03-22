@@ -96,8 +96,8 @@ rule mark_duplicates:
     log:
         f"{LOGDIR}/picard/dedup/{{sample}}-{{unit}}.log"
     params:
-        extra=config["params"]["picard"]["MarkDuplicates"]
-    threads: get_resource("mark_duplicates","threads")
+        extra=config["params"]["picard"]["MarkDuplicates"],
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("mark_duplicates","threads"))
     resources:
         mem_mb = get_resource("mark_duplicates","mem"),
         runtime = get_resource("mark_duplicates","walltime")
@@ -134,13 +134,13 @@ rule obtain_recal_table:
     output:
         recal_table=f"{OUTDIR}/recal/{{sample}}-{{unit}}.grp"
     params:
-        extra=get_regions_param() + config["params"]["gatk"]["BaseRecalibrator"]
+        extra=get_regions_param() + config["params"]["gatk"]["BaseRecalibrator"],
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("obtain_recal_table","threads"))
     log:
         f"{LOGDIR}/gatk/bqsr/{{sample}}-{{unit}}.log"
-    threads: get_resource("recalibrate_base_qualities","threads")
     resources:
-        mem_mb = get_resource("recalibrate_base_qualities","mem"),
-        runtime = get_resource("recalibrate_base_qualities","walltime")
+        mem_mb = get_resource("obtain_recal_table","mem"),
+        runtime = get_resource("obtain_recal_table","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}.obtain_recal_table.txt"
     wrapper:
@@ -157,7 +157,8 @@ rule recalibrate_base_qualities:
         bam=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bam",
         bai=f"{OUTDIR}/recal/{{sample}}-{{unit}}.bai"
     params:
-        extra=""
+        extra="",
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("recalibrate_base_qualities","threads"))
     log:
         f"{LOGDIR}/gatk/gatk_applybqsr/{{sample}}-{{unit}}.log"
     resources:
@@ -210,6 +211,7 @@ rule index_known_variants:
     log:
         f"{LOGDIR}/gatk/index_known_variants.log"
     resources:
+        threads = get_resource("index_known_variants","threads"),
         mem_mb = get_resource("index_known_variants","mem"),
         runtime = get_resource("index_known_variants","walltime")
     benchmark:

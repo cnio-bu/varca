@@ -6,8 +6,9 @@ rule snpeff_download:
     params:
         reference=f"{config['ref']['name']}"
     resources:
-        mem_mb = get_resource("snpeff","mem"),
-        runtime = get_resource("snpeff","walltime")
+        threads = get_resource("snpeff_download","threads"),
+        mem_mb = get_resource("snpeff_download","mem"),
+        runtime = get_resource("snpeff_download","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/snpeff_download.txt"
     wrapper:
@@ -24,11 +25,11 @@ rule snpeff:
         stats="snpeff/{{group}}.html"
     log:
         f"{LOGDIR}/snpeff/{{group}}.snpeff.log"
-    threads: get_resource("snpeff","threads")
     resources:
         mem_mb = get_resource("snpeff","mem"),
         runtime = get_resource("snpeff","walltime")
     params:
+        java_opts="-XX:ParallelGCThreads={}".format(get_resource("snpeff","threads")),
         extra=""
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.snpeff.txt"
@@ -82,10 +83,10 @@ rule vep_gatk:
         extra=f"{config['annotation']['vep']['extra']}"
     log:
         f"{LOGDIR}/vep/{{group}}.gatk_vep.log"
-    threads: get_resource("vep","threads")
+    threads: get_resource("vep_gatk","threads")
     resources:
-        mem_mb = get_resource("vep","mem"),
-        runtime = get_resource("vep","walltime")
+        mem_mb = get_resource("vep_gatk","mem"),
+        runtime = get_resource("vep_gatk","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{group}}.vep_gatk.txt"
     wrapper:
@@ -104,10 +105,10 @@ rule vep_mutect:
         extra=f"{config['annotation']['vep']['extra']}"
     log:
         f"{LOGDIR}/vep/mutect_{{sample}}_vep.log"
-    threads: get_resource("vep","threads")
+    threads: get_resource("vep_mutect","threads")
     resources:
-        mem_mb = get_resource("vep","mem"),
-        runtime = get_resource("vep","walltime")
+        mem_mb = get_resource("vep_mutect","mem"),
+        runtime = get_resource("vep_mutect","walltime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}.vep_mutect.txt"
     wrapper:
