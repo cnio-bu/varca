@@ -12,7 +12,7 @@ def get_contigs():
             contigs = pd.read_csv(config["contigs"],sep="\t",header=None,usecols=[0],dtype=str).squeeze("columns")
         else:
             contigs = pd.read_table(fai, header=None, usecols=[0], dtype=str).squeeze("columns")
-        return [re.sub("\*","___",x) for x in contigs]
+        return [re.sub(r"\*","___",x) for x in contigs]
 
 def get_resource(rule,resource):
     try:

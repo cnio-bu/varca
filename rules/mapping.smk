@@ -128,7 +128,7 @@ rule obtain_recal_table:
         bai=get_recal_input(bai=True),
         ref=config["ref"]["genome"],
         ref_idx=f"{config['ref']['genome']}.fai",
-        dict=re.sub("\.fa.*","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict",
+        dict=re.sub(r"\.fa.*","",os.path.splitext(config["ref"]["genome"])[0]) + ".dict",
         known=config["ref"]["known_variants"],
         known_idx=f"{config['ref']['known_variants']}.tbi"
     output:
