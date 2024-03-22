@@ -24,6 +24,23 @@ validate(units, schema="schemas/units.schema.yaml")
 
 include: "rules/common.smk"
 
+##### Warnings #####
+class ansitxt:
+    RED = '\033[31m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+
+def warning(msg):
+    print(f"\n{ansitxt.BOLD}{ansitxt.RED}{msg}{ansitxt.ENDC}\n",file=sys.stderr)
+
+if config['ref']['known_variants'].endswith(".vcf") == True:
+    warning(f"ERROR: Known variants file is not compressed. It has to be provided compressed in bgzip format.")
+    sys.exit(1)
+
+warning("Check if your genome contains alternative contigs and configure the execution accordingly in the ref section of the config file.")
+
+warning("After each rule is executed, it generates a benchmark report. You can find them in the benchmarks directory within the logs directory. Please, adjust the parameters in the config file accordingly for subsequent executions.")
+
 ##### Target rules #####
 
 rule all:
