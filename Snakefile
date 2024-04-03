@@ -2,7 +2,7 @@ import pandas as pd
 import os
 from snakemake.utils import validate
 from snakemake.utils import min_version
-min_version("7.28.2")
+min_version("8.6.0")
 
 singularity: "docker://continuumio/miniconda3:4.6.14"
 
