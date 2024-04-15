@@ -49,6 +49,14 @@ def get_trimmed_reads(wildcards):
     # single end sample
     return f"{OUTDIR}/trimmed/{{sample}}-{{unit}}.fastq.gz".format(**wildcards)
 
+def get_trimmed_reads_qc(wildcards):
+    """Get trimmed reads of given sample-unit."""
+    if not is_single_end(wildcards.sample, wildcards.unit):
+        # paired-end sample
+        return {"r1": "{OUTDIR}/trimmed/{sample}-{unit}.1.fastq.gz".format(OUTDIR=OUTDIR, sample=wildcards.sample, unit=wildcards.unit), "r2": "{OUTDIR}/trimmed/{sample}-{unit}.2.fastq.gz".format(OUTDIR=OUTDIR, sample=wildcards.sample, unit=wildcards.unit)}
+    # single end sample
+    return {"r1": "{OUTDIR}/trimmed/{sample}-{unit}.fastq.gz".format(OUTDIR=OUTDIR, sample=wildcards.sample, unit=wildcards.unit)}
+
 
 def get_sample_bams(sample):
     """Get all aligned reads of given sample."""

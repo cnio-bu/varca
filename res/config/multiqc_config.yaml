@@ -1,0 +1,9 @@
+ module_order:
+   - fastqc:
+       name: "FastQC (trimmed)"
+       path_filters:
+         - "*trimmed*fastqc*"
+   - fastqc:
+       name: "FastQC (raw)"
+       path_filters:
+         - "*r[12]_fastqc*"
