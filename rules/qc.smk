@@ -1,15 +1,34 @@
-rule fastqc:
+rule fastqc_untrimmed:
     input:
         lambda wc: get_fastq(wc)[wc.read]
     output:
         html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_fastqc.html",
         zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_fastqc.zip"
+    log:
+        f"{LOGDIR}/fastqc_untrimmed/{{sample}}-{{unit}}-{{read}}.log"
     threads: get_resource("fastqc","threads")
     resources:
         mem_mb = get_resource("fastqc","mem_mb"),
         runtime = get_resource("fastqc","runtime")
     benchmark:
         f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}-{{read}}.fastqc.txt"
+    wrapper:
+        "v3.5.0/bio/fastqc"
+
+rule fastqc_trimmed:
+    input:
+        lambda wc: get_trimmed_reads_qc(wc)[wc.read]
+    output:
+        html=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_trimmed_fastqc.html",
+        zip=f"{OUTDIR}/qc/fastqc/{{sample}}-{{unit}}-{{read}}_trimmed_fastqc.zip"
+    log:
+        f"{LOGDIR}/fastqc_trimmed/{{sample}}-{{unit}}-{{read}}.log"
+    threads: get_resource("fastqc","threads")
+    resources:
+        mem_mb = get_resource("fastqc","mem_mb"),
+        runtime = get_resource("fastqc","runtime")
+    benchmark:
+        f"{LOGDIR}/benchmarks/{{sample}}-{{unit}}-{{read}}.trimmed.fastqc.txt"
     wrapper:
         "v3.5.0/bio/fastqc"
 
@@ -92,16 +111,21 @@ rule multiqc:
     input:
          [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_fastqc.zip", r=["r1"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) == "nan")],
          [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_fastqc.zip", r=["r1","r2"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) != "nan")],
+         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_trimmed_fastqc.zip", r=["r1"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) == "nan")],
+         [expand(f"{OUTDIR}/qc/fastqc/{row.sample}-{row.unit}-{{r}}_trimmed_fastqc.zip", r=["r1","r2"]) for row in units.itertuples() if (str(getattr(row, 'fq2')) != "nan")],
          expand(f"{OUTDIR}/qc/samtools-stats/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/dedup/{{u.sample}}-{{u.unit}}.metrics.txt", u=units.itertuples()),
          expand(f"{OUTDIR}/qc/picard/{{u.sample}}-{{u.unit}}.txt", u=units.itertuples()) if config["processing"].get("restrict_regions") else [],
          expand(f"{OUTDIR}/snpeff/{{u.group}}.csv", u=samples.itertuples())
     output:
         report(f"{OUTDIR}/qc/multiqc.html", caption="../report/multiqc.rst", category="Quality control")
+    params:
+        extra = "--config res/config/multiqc_config.yaml",
+        use_input_files_only=True
     log:
         f"{LOGDIR}/multiqc.log"
-    threads: get_resource("multiqc","threads")
     resources:
+        threads = get_resource("multiqc","threads"),
         mem_mb = get_resource("multiqc","mem_mb"),
         runtime = get_resource("multiqc","runtime")
     benchmark:
